@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Minimal animation example</title>
+
+        <!--
+        Notice, this example uses jQuery ( http://jquery.com/ ).
+        Quick access link is used for jQuery instead of having
+        a local source copy of the component because jQuery is only
+        used with examples.
+        -->
+
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="../deps/OpenLayers-2.13.1/theme/default/style.css" />
+
+        <!-- Internal style -->
+        <style>
+            .map {
+                height: 400px;
+                width: 400px;
+                border: 1px solid #ccc;
+            }
+        </style>
+
+        <!-- JavaScript -->
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="../deps/OpenLayers-2.13.1/OpenLayers.js"></script>
+        <script type="text/javascript" src="../deps/lodash/lodash.compat-2.1.0-min.js"></script>
+        <script type="text/javascript" src="../lib/openlayers-animation-1.0.1.js"></script>
+
+        <script type="text/javascript">
+            jQuery(function() {
+            map = new OpenLayers.Map({
+              div : 'wmsMap',
+              projection : 'EPSG:3067',
+              maxExtent : new OpenLayers.Bounds(-118331.366408, 6335621.167014, 875567.731907, 7907751.537264)
+            });
+
+            // Base layer is loaded from the service of National Land Survey of Finland to get a nice map.
+            // More information about the service: http://kartat.kapsi.fi/
+            var baseLayer = new OpenLayers.Layer.WMS("NLSFI", "http://tiles.kartat.kapsi.fi/taustakartta", {
+            layers : "taustakartta"
+            });
+            map.addLayer(baseLayer);
+            // Zoom a little bit to make the initial view look better.
+            map.zoomTo(1);
+
+            var wmsUrl = "http://wms.fmi.fi/fmi-apikey/" + "a33c7c2a-5057-4170-a7d9-3c9dc966e322" + "/geoserver/Radar/wms";
+            var wmsParams = {
+            layers : "suomi_rr_eureffin",
+            transparent: true
+            };
+
+            var timedLayerOptions = {timeSetter : OpenLayers.Layer.Animation.TimedLayerClassWrapper.mergeParams};
+            var TimedWms = OpenLayers.Layer.Animation.TimedLayerClassWrapper(OpenLayers.Layer.WMS, timedLayerOptions)
+            var wmsLayer = new TimedWms("WMS layer", wmsUrl, wmsParams);
+
+            map.addLayer(wmsLayer);
+
+            var now = new Date().getTime();
+            var dates = _.map([0,900,1800,2700,3600], function(dt_s) {return new Date(now-dt_s*1000)});
+            var date_idx = 0;
+              setInterval(function() {
+                var t = dates[date_idx];
+                date_idx = (date_idx + 1) % dates.length;
+            console.log(t.getTime());
+                var rounded = new Date(t.getTime() - (t.getTime() % 900000));
+            console.log(rounded);
+                wmsLayer.setTime(rounded);
+              }, 1000);
+            });
+        </script>
+    </head>
+    <body>
+        <h2>WMS Animation</h2>
+        <p id="animationStatus">
+            <!-- Animation status text will be set here. -->
+        </p>
+        <div id="wmsMap" class="map">
+            <!-- Animation WMS map will be inserted here. -->
+        </div>
+    </body>
+</html>
