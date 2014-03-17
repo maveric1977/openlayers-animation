@@ -47,7 +47,8 @@ module.exports = function(grunt) {
         // Detect errors and potential problems in JavaScript code and enforce coding conventions.
         //----------------------------------------------------------------------------------------
         jshint : {
-            all : ['src/**/*.js', 'lib/openlayers-animation-<%= pkg.version %>.js'],
+            source : ['src/**/*.js'],
+            pkg : ['lib/openlayers-animation-<%= pkg.version %>.js'],
             options : {
                 "curly" : true,
                 "eqeqeq" : true,
@@ -127,11 +128,11 @@ module.exports = function(grunt) {
 
     // Build MetOLib.
     // Notice, combined file is purged of strict definition lines and then strict definition is included to the beginning of the file before uglifying.
-    grunt.registerTask('build', ['clean:onlyFiles', 'concat:all', 'string-replace:useStrict', 'concat:intro', 'uglify', 'string-replace:version']);
+    grunt.registerTask('build', ['clean:onlyFiles', 'jshint:source', 'concat:all', 'string-replace:useStrict', 'concat:intro', 'uglify', 'string-replace:version']);
 
     // Default task(s).
     // As a default, only local data is used for tests. Then, tests can be run also without connection for server data.
     // Notice, test can be run separately also for server data.
-    grunt.registerTask('default', ['build', 'jshint']);
+    grunt.registerTask('default', ['build', 'jshint:pkg']);
 
 };
