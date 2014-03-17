@@ -9,6 +9,17 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         this._layerFactory = options.layerFactory;
         this._layers = {}; // indexed by ISO 8601 time string
         this._opacity = 1.0; // Not available through Layer, store locally
+
+        this.events.register("added", this, this.addedToMap);
+        this.events.register("removed", this, this.removedFromMap);
+    },
+
+    addedToMap : function(ev) {
+        _.each(this._layers, function(layer) {ev.map.addLayer(layer);});
+    },
+
+    removedFromMap : function(ev) {
+        _.each(this._layers, function(layer) {ev.map.removeLayer(layer);});
     },
     
     initLayer : function(layer) {
