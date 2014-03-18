@@ -55,8 +55,6 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         _.each(this._layers, function(layer) {layer.setOpacity(0);});
         layer.setOpacity(this.getOpacity());
 
-        // TODO CB on when this layer is added to / removed from a map - must propagate
-
         // TODO Ask preload policy if some timesteps should be preloaded
         // TODO Ask unload policy if some timesteps should be discarded
     },
