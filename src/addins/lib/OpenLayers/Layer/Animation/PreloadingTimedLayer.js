@@ -10,6 +10,9 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         this._layers = {}; // indexed by ISO 8601 time string
         this._opacity = 1.0; // Not available through Layer, store locally
 
+        this._start = undefined; // set through setTimeAndRange, undefined means unlimited
+        this._end = undefined; // set through setTimeAndRange, undefined means unlimited
+
         this.events.register("added", this, this.addedToMap);
         this.events.register("removed", this, this.removedFromMap);
     },
@@ -38,10 +41,15 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         // TODO Take into account that only "current" layer, if any, should be visible
     },
 
-    /**
-     * Interface for layers that support setting time of the layer.
-     */
     setTime : function(t) {
+        if ((this._start !== undefined && t < this._start) || (this._end !== undefined && t > this._end)) {
+            // Don't set time if outside range
+
+            // TODO Keep track of current layer/time
+            // TODO Use fader
+            _.each(this._layers, function(layer) {layer.setOpacity(0);});
+            return;
+        }
         var k = t.toISOString();
         var layer = this._layers[k];
         if (layer === undefined) {
@@ -57,6 +65,12 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
 
         // TODO Ask preload policy if some timesteps should be preloaded
         // TODO Ask unload policy if some timesteps should be discarded
+    },
+
+    setTimeAndRange : function(time, start, end) {
+        this._start = start;
+        this._end = end;
+        this.setTime(time);
     },
 
     setVisibility : function(visibility) {
