@@ -35,16 +35,13 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         layer.setVisibility(this.getVisibility());
         layer.setZIndex(this.getZIndex());
         layer.setOpacity(this.getOpacity());
+        // TODO Take into account that only "current" layer, if any, should be visible
     },
 
     /**
      * Interface for layers that support setting time of the layer.
      */
     setTime : function(t) {
-
-        // TODO Switch layers througg fader
-        _.each(this._layers, function(layer) {layer.setVisibility(false);});
-
         var k = t.toISOString();
         var layer = this._layers[k];
         if (layer === undefined) {
@@ -53,8 +50,10 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
             this.reconfigureLayer(layer);
             this._layers[k] = layer;
         }
+
         // TODO Switch layers through fader
-        layer.setVisibility(this.getVisibility());
+        _.each(this._layers, function(layer) {layer.setOpacity(0);});
+        layer.setOpacity(this.getOpacity());
 
         // TODO CB on when this layer is added to / removed from a map - must propagate
 
