@@ -10,6 +10,8 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         this._layers = {}; // indexed by ISO 8601 time string
         this._opacity = 1.0; // Not available through Layer, store locally
 
+        this._preloadPolicy = options.preloadPolicy;
+
         this._start = undefined; // set through setTimeAndRange, undefined means unlimited
         this._end = undefined; // set through setTimeAndRange, undefined means unlimited
 
@@ -41,6 +43,19 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         // TODO Take into account that only "current" layer, if any, should be visible
     },
 
+    loadLayer : function(t) {
+        var k = t.toISOString();
+        var layer = this._layers[k];
+        if (layer === undefined) {
+            console.log("Loading", t);
+            layer = this._layerFactory(t);
+            this.initLayer(layer);
+            this.reconfigureLayer(layer);
+            this._layers[k] = layer;
+        }
+        return layer;
+    },
+
     setTime : function(t) {
         if ((this._start !== undefined && t < this._start) || (this._end !== undefined && t > this._end)) {
             // Don't set time if outside range
@@ -50,20 +65,16 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
             _.each(this._layers, function(layer) {layer.setOpacity(0);});
             return;
         }
-        var k = t.toISOString();
-        var layer = this._layers[k];
-        if (layer === undefined) {
-            layer = this._layerFactory(t);
-            this.initLayer(layer);
-            this.reconfigureLayer(layer);
-            this._layers[k] = layer;
-        }
+        var layer = this.loadLayer(t);
 
         // TODO Switch layers through fader
         _.each(this._layers, function(layer) {layer.setOpacity(0);});
         layer.setOpacity(this.getOpacity());
 
-        // TODO Ask preload policy if some timesteps should be preloaded
+        var preloadTimes = this._preloadPolicy.preloadAt(t);
+        _.each(preloadTimes, function(preloadTime) {
+            var preloadLayer = this.loadLayer(preloadTime);
+        }, this);
         // TODO Ask unload policy if some timesteps should be discarded
     },
 
