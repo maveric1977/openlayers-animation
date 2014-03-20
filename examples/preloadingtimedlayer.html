@@ -64,13 +64,17 @@
 
 
             var now = new Date().getTime();
-            var dates = _.map([0,900,1800,2700,3600,4500,5400], function(dt_s) {var t = now-900000-dt_s*1000; return new Date(t - t%900000)});
+            var dates = _.map([0,900,1800,2700,3600,4500,5400,6300], function(dt_s) {var t = now-900000-dt_s*1000; return new Date(t - t%900000)});
+            var range1 = [dates[5], dates[1]];
+            var range2 = [dates[6], dates[2]];
 
             var wmsOptions = {transitionEffect: null};
 
+            var preloader = new OpenLayers.Layer.Animation.PreloadAll(900000, range1);
             var timedLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Animated layer", {
                 "layerFactory" : function(t) {return new OpenLayers.Layer.WMS("Foo", wmsUrl, _.extend(_.clone(wmsParams), {"TIME" : t.toISOString()}), wmsOptions)},
-                "preloadPolicy" : new OpenLayers.Layer.Animation.PreloadAll(900000, [dates[5], dates[1]])
+                "preloadPolicy" : preloader,
+                "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange()
             });
             <!-- var timedLayerOptions = {timeSetter : OpenLayers.Layer.Animation.TimedLayerClassWrapper.mergeParams}; -->
             <!-- var TimedWms = OpenLayers.Layer.Animation.TimedLayerClassWrapper(OpenLayers.Layer.WMS, timedLayerOptions) -->
@@ -84,7 +88,7 @@
             var opacity_idx = 0;
             var vis_idx = 0;
 
-            timedLayer.setTimeAndRange(now - (now % 900000), dates[5], dates[1]);
+            timedLayer.setTimeAndRange(now - (now % 900000), range1[0], range1[1]);
             setInterval(function() {
               var t = dates[date_idx];
               var op = opacities[opacity_idx];
@@ -100,6 +104,11 @@
               timedLayer.setTime(rounded);
               $("#time").html(rounded.toISOString() + " " + op);
             }, 1000);
+
+              setTimeout(function() {
+                preloader.range = range2;
+                timedLayer.setTimeAndRange(dates[2], range2[0], range2[1]);
+              }, 5000);
 
             <!-- setInterval(function() { -->
             <!--   console.log("removing"); -->
