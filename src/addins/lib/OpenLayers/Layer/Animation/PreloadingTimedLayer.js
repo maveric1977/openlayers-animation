@@ -11,6 +11,7 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         this._opacity = 1.0; // Not available through Layer, store locally
 
         this._preloadPolicy = options.preloadPolicy;
+        this._retainPolicy = options.retainPolicy;
 
         this._start = undefined; // set through setTimeAndRange, undefined means unlimited
         this._end = undefined; // set through setTimeAndRange, undefined means unlimited
@@ -58,6 +59,7 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
 
     setTime : function(t) {
         if ((this._start !== undefined && t < this._start) || (this._end !== undefined && t > this._end)) {
+            // TODO Move in-range check to some utility? Import timestep.js from wmap?
             // Don't set time if outside range
 
             // TODO Keep track of current layer/time
@@ -75,12 +77,30 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         _.each(preloadTimes, function(preloadTime) {
             var preloadLayer = this.loadLayer(preloadTime);
         }, this);
-        // TODO Ask unload policy if some timesteps should be discarded
+
     },
 
     setTimeAndRange : function(time, start, end) {
         this._start = start;
         this._end = end;
+
+        // TODO Get time through an API
+        var loadedTimes = _.map(this._layers, function(v, k) {return new Date(v.params.TIME);});
+        var retainedTimes = this._retainPolicy.retain([start, end], loadedTimes);
+        console.log("Loaded", loadedTimes);
+        console.log("Retained", retainedTimes);
+        var removedTimestamps = _.difference(_.invoke(loadedTimes, 'getTime'), _.invoke(retainedTimes, 'getTime'));
+        console.log("Removed", removedTimestamps);
+        _.each(removedTimestamps, function(removedTimestamp) {
+            var removed = new Date(removedTimestamp);
+            console.log("Unloading", removed);
+            var removedLayer = this._layers[removed.toISOString()];
+            if (this.map !== undefined) {
+                this.map.removeLayer(removedLayer);
+            }
+            delete this._layers[removed.toISOString()];
+        }, this);
+
         this.setTime(time);
     },
 
