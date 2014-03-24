@@ -43,7 +43,8 @@
    - retain(loaded_times, (t, range)) -> to-retain timesteps
    - added, not tested, difficult-to-test
 * v2
-** TODO LayerGroupCoordinator
+** DONE LayerGroupCoordinator
+   CLOSED: [2014-03-24 Mon 15:40]
    - knows about user-visible layers (which are potentially groups of layers)
    - controls begin and end times passed to (Ranged) layers
    - receives updates to begin/end times of individual layers
@@ -51,9 +52,6 @@
      - constraints limit overlap
    - can also pass begin and end times directly, but point is that coordinator can handle configurations like "A until it ends, then B"
 * v3
-** TODO Generate frame events
-   - frame load start
-   - frame load end
 ** TODO Interface review
 *** TODO Add getTime() to TimedLayer?
 *** TODO Add getRange() to RangedLayer?
@@ -64,6 +62,11 @@
       to request invalid times
 *** TODO What should setTime() do when the time set is outside range?
 *** TODO Need to be able to set range without touching current time
+* v3.5
+** TODO Generate frame events
+   - frame load start
+   - frame load end
+
 * v4
 ** Fading
    - pass fader function to TimeAwareLayerWrapper (and LayerSequenceCoordinator to enable fading between layers)
