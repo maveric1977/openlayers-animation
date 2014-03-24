@@ -13,6 +13,7 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         this._preloadPolicy = options.preloadPolicy;
         this._retainPolicy = options.retainPolicy;
 
+        this._time = undefined; // set through setTime/setTimeAndRange, TODO what does undefined mean?
         this._start = undefined; // set through setTimeAndRange, undefined means unlimited
         this._end = undefined; // set through setTimeAndRange, undefined means unlimited
 
@@ -67,7 +68,9 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
             _.each(this._layers, function(layer) {layer.setOpacity(0);});
             return;
         }
+        this._time = t;
         var layer = this.loadLayer(t);
+        console.log("Setting time", layer.name, t, this._start, this._end);
 
         // TODO Switch layers through fader
         _.each(this._layers, function(layer) {layer.setOpacity(0);});
@@ -101,7 +104,9 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
             delete this._layers[removed.toISOString()];
         }, this);
 
-        this.setTime(time);
+        if (time !== undefined) {
+            this.setTime(time);
+        }
     },
 
     setVisibility : function(visibility) {
