@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Minimal animation example</title>
+
+        <!--
+        Notice, this example uses jQuery ( http://jquery.com/ ).
+        Quick access link is used for jQuery instead of having
+        a local source copy of the component because jQuery is only
+        used with examples.
+        -->
+
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="../deps/OpenLayers-2.13.1/theme/default/style.css" />
+
+        <!-- Internal style -->
+        <style>
+            .map {
+                height: 400px;
+                width: 400px;
+                border: 1px solid #ccc;
+            }
+
+            .olLayerGrid .olTileImage {
+            -webkit-transition: opacity 0.0s linear;
+            -moz-transition: opacity 0.0s linear;
+            -o-transition: opacity 0.0s linear;
+            transition: opacity 0.0s linear;
+ }
+        </style>
+
+        <!-- JavaScript -->
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="../deps/OpenLayers-2.13.1/OpenLayers.js"></script>
+        <script type="text/javascript" src="../deps/lodash/lodash.compat-2.1.0-min.js"></script>
+        <script type="text/javascript" src="../lib/openlayers-animation-1.0.1.js"></script>
+
+        <script type="text/javascript">
+            jQuery(function() {
+            map = new OpenLayers.Map({
+              div : 'wmsMap',
+              projection : 'EPSG:3067',
+              maxExtent : new OpenLayers.Bounds(-118331.366408, 6335621.167014, 875567.731907, 7907751.537264)
+            });
+
+            // Base layer is loaded from the service of National Land Survey of Finland to get a nice map.
+            // More information about the service: http://kartat.kapsi.fi/
+            var baseLayer = new OpenLayers.Layer.WMS("NLSFI", "http://tiles.kartat.kapsi.fi/taustakartta", {
+            layers : "taustakartta"
+            });
+            map.addLayer(baseLayer);
+            // Zoom a little bit to make the initial view look better.
+            map.zoomTo(1);
+
+            var wmsUrl = "http://wms.fmi.fi/fmi-apikey/" + "0c306c5d-bccb-482b-b6e7-3a2d3271a566" + "/geoserver/wms";
+            var observationParams = {
+            layers : "Radar:suomi_rr_eureffin",
+            transparent: true,
+            };
+
+            var predictionParams = {
+            layers : "Radar:suomi_tuliset_rr_eureffin",
+            transparent: true,
+            };
+
+            map.tileManager.cacheSize = 4096;
+            map.tileManager.tilesPerFrame = 16;
+
+
+            var now = new Date().getTime();
+            var dates = _.map([-5400, -4500, -3600, -2700, -1800, -900, 0,900,1800,2700,3600,4500,5400,6300], function(dt_s) {var t = now-900000+dt_s*1000; return new Date(t - t%900000)});
+            var range1 = [dates[0], dates[13]];
+
+            var wmsOptions = {transitionEffect: null};
+
+            var preloader = new OpenLayers.Layer.Animation.PreloadAll(900000, range1);
+            var observationLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Radar:suomi_rr_eureffin", {
+                "layerFactory" : function(t) {return new OpenLayers.Layer.WMS("Foo", wmsUrl, _.extend(_.clone(observationParams), {"TIME" : t.toISOString()}), wmsOptions)},
+                "preloadPolicy" : preloader,
+                "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange()
+            });
+
+            var predictionLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Radar:suomi_tuliset_rr_eureffin", {
+                "layerFactory" : function(t) {return new OpenLayers.Layer.WMS("Bar", wmsUrl, _.extend(_.clone(predictionParams), {"TIME" : t.toISOString()}), wmsOptions)},
+                "preloadPolicy" : preloader,
+                "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange()
+            });
+
+            var layers = [observationLayer, predictionLayer];
+            var availableRanges = {
+               "Radar:suomi_rr_eureffin" : [dates[0]-3600000, dates[6]],
+               "Radar:suomi_tuliset_rr_eureffin" : [dates[6], dates[13] + 3600000]
+            }
+            var constraints = {
+              globalRange : range1,
+              rangeGroups : {
+                "observation" : {
+                  "range" : [dates[0], dates[6]],
+                  "layers" : ["Radar:suomi_rr_eureffin"]
+                },
+                "prediction" : {
+                  "range" : [dates[7], dates[13]],
+                  "layers" : ["Radar:suomi_tuliset_rr_eureffin"]
+                }
+              }
+            }
+            var coordinator = new OpenLayers.Layer.Animation.LayerGroupCoordinator(layers, constraints, availableRanges);
+            map.addLayers(layers);
+
+            var opacities = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+            var visibilities = [1,1,1,1,1,1,1,1,1,1,0,0,0];
+            var date_idx = 0;
+            var opacity_idx = 0;
+            var vis_idx = 0;
+
+            setInterval(function() {
+              var t = dates[date_idx];
+              var op = opacities[opacity_idx];
+              var vis = visibilities[vis_idx];
+              date_idx = (date_idx + 1) % dates.length;
+              opacity_idx = (opacity_idx + 1) % opacities.length;
+              vis_idx = (vis_idx + 1) % visibilities.length;
+
+              var rounded = new Date(t.getTime() - (t.getTime() % 900000));
+              console.log(rounded, op, vis);
+              //timedLayer.setOpacity(op);
+              <!-- timedLayer.setVisibility(vis); -->
+              coordinator.setTime(rounded);
+              $("#time").html(rounded.toISOString() + " " + op);
+            }, 1000);
+
+
+            });
+
+        </script>
+    </head>
+    <body>
+        <h2>WMS Animation</h2>
+        <p id="time">
+        </p>
+        <div id="wmsMap" class="map">
+            <!-- Animation WMS map will be inserted here. -->
+        </div>
+    </body>
+</html>
