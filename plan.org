@@ -1,0 +1,81 @@
+* v1
+** DONE TimedLayer interface
+   - defined interface for setting current time for layer
+** NOPE TimedLayerWrapper
+   CLOSED: [2014-03-13 Thu 17:26]
+   - wraps an existing layer
+   - user-supplied layer, user-supplied callback that sets time of the layer
+     - may e.g. do nothing
+   - doesn't work, would need to monkey-patch
+** DONE TimedLayerClassWrapper
+   CLOSED: [2014-03-14 Fri 15:04]
+   - wraps an existing layer class
+   - creates a new class with setTime
+** DONE PreloadingTimedLayer
+   CLOSED: [2014-03-17 Mon 13:54]
+   - implements TimedLayer
+   - instantiates layers through user-supplied factory function makeLayer(t)
+     - may pre-instantiate layers
+   - select layer to be displayed based on time property
+** DONE RangedLayer interface
+   CLOSED: [2014-03-18 Tue 17:58]
+   - extension to TimedLayers
+   - defines interface for setting start/end visible times for layer
+** DONE RangedLayerClassWrapper
+   CLOSED: [2014-03-18 Tue 17:58]
+   - wraps any TimedLayer
+   - visibility is be controlled by RangedLayerWrapper itself
+     - intercept setVisibility calls, track both set-visibility and time-visibility, generate actual-visibility from them
+     - call setVisibility on wrapped layer based on actual-visibility whenever it changes
+   - time should be set by directly modifying time property of the
+     layer, which it passes on to the wrapped layer, like for plain WMS
+     and WMTS layers
+   - start/end times vs. current time as passed through time should control visibility
+** DONE Add range support to PreloadingTimedLayer
+   CLOSED: [2014-03-18 Tue 17:58]
+* v1.5
+** DONE Add preload policy to PreloadingTimedLayer
+   CLOSED: [2014-03-19 Wed 10:57]
+   - only when it has grown range support
+   - preload((t, steprange)) -> to-preload timesteps in-order
+** DONE Add unload policy to PreloadingTimedLayer
+   CLOSED: [2014-03-20 Thu 14:53]
+   - retain(loaded_times, (t, range)) -> to-retain timesteps
+   - added, not tested, difficult-to-test
+* v2
+** TODO LayerGroupCoordinator
+   - knows about user-visible layers (which are potentially groups of layers)
+   - controls begin and end times passed to (Ranged) layers
+   - receives updates to begin/end times of individual layers
+   - receives a configuration that specifies constraints such as "B starts where A ends"
+     - constraints limit overlap
+   - can also pass begin and end times directly, but point is that coordinator can handle configurations like "A until it ends, then B"
+* v3
+** TODO Generate frame events
+   - frame load start
+   - frame load end
+** TODO Interface review
+*** TODO Add getTime() to TimedLayer?
+*** TODO Add getRange() to RangedLayer?
+*** TODO Change setTimeAndRange() of RangedLayer to take range as array instead of begin and end?
+*** TODO Should layer limit itself to given resolution, or should that be handled in LayerGroupCoordinator?
+    - *something* should ensure that a layer shows the
+      previous/next/some other time and most importantly doesn't try
+      to request invalid times
+*** TODO What should setTime() do when the time set is outside range?
+*** TODO Need to be able to set range without touching current time
+* v4
+** Fading
+   - pass fader function to TimeAwareLayerWrapper (and LayerSequenceCoordinator to enable fading between layers)
+   - fader function receives old and new layer and performs fading however it pleases
+     - either old or new layer may be undefined, in which case fader should just deal with the one that is defined
+       - some other fader is dealing with the other layer
+     - it should probably only control opacity, though
+     - fader must call a fadeDone callback once it is done fading
+   - control flow
+     - setVisible(true) on new layer
+     - pass old and new and cb to layer
+     - fader does its thing over time and calls cb
+     - cb does setVisible(false) on old layer
+* TODO
+** legendinfo?
