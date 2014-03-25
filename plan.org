@@ -53,22 +53,40 @@
    - can also pass begin and end times directly, but point is that coordinator can handle configurations like "A until it ends, then B"
 * v3
 ** TODO Interface review
-*** TODO Add getTime() to TimedLayer?
-*** TODO Add getRange() to RangedLayer?
-*** TODO Change setTimeAndRange() of RangedLayer to take range as array instead of begin and end?
-*** TODO Should layer limit itself to given resolution, or should that be handled in LayerGroupCoordinator?
+*** DONE Add getTime() to TimedLayer?
+    CLOSED: [2014-03-24 Mon 18:09]
+*** DONE Add getRange() to RangedLayer?
+    CLOSED: [2014-03-24 Mon 18:09]
+*** DONE Change setTimeAndRange() of RangedLayer to take range as array instead of begin and end?
+    CLOSED: [2014-03-24 Mon 18:09]
+** DONE Add setRange() to RangedLayer
+   CLOSED: [2014-03-24 Mon 18:09]
+** DONE What should setTime() do when the time set is outside range?
+    CLOSED: [2014-03-24 Mon 18:26]
+    - now hides layer with setVisiblity() or equivalent
+      - ok for now? maybe add policy alter
+** DONE Need to be able to set range without touching current time
+    CLOSED: [2014-03-24 Mon 18:26]
+** DONE TimedLayer and RangedLayer in wrong "package"
+    CLOSED: [2014-03-24 Mon 18:27]
+    - moved from OpenLayers.Layer.x to OpenLayers.Layer.Animation.x
+* v3.1
+** TODO Get current time range(s) from coordinator
+
+* v3.2
+** TODO Should layer limit itself to given resolution, or should that be handled in LayerGroupCoordinator?
     - *something* should ensure that a layer shows the
       previous/next/some other time and most importantly doesn't try
       to request invalid times
-*** TODO What should setTime() do when the time set is outside range?
-*** TODO Need to be able to set range without touching current time
+      - layer should limit itself
+      - need timestep.js for that
 * v3.5
 ** TODO Generate frame events
    - frame load start
    - frame load end
 
 * v4
-** Fading
+** TODO Fading
    - pass fader function to TimeAwareLayerWrapper (and LayerSequenceCoordinator to enable fading between layers)
    - fader function receives old and new layer and performs fading however it pleases
      - either old or new layer may be undefined, in which case fader should just deal with the one that is defined

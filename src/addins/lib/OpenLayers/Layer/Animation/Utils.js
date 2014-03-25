@@ -121,6 +121,14 @@ OpenLayers.Layer.Animation.Utils = (function() {
     }
 
     /**
+     * See API for function and paremeters description.
+     */
+    function inRange(t, range) {
+        return (range[0] === undefined || t >= range[0]) && (range[1] === undefined || t <= range[1]);
+    }
+
+
+    /**
      * =========================================
      * Public API is returned here.
      * =========================================
@@ -136,5 +144,20 @@ OpenLayers.Layer.Animation.Utils = (function() {
          *                   Operation is ignored if {undefined} or {null}.
          */
         floorDateToHour : floorDateToHour,
+
+        /**
+         * @method inRange
+         *
+         * Tell if given time is in given range.
+         *
+         * @param {Date} t Time to test.
+         *
+         * @param {Array<Date>} range Range to test against. Undefined
+         * endpoints mean range is semi-open in that direction.
+         *
+         */
+        inRange : inRange
+
+
     };
 })();

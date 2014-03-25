@@ -60,7 +60,7 @@ OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
             if (limitedRange !== undefined) {
                 // TODO Update ranges
                 // TODO *need* access to time of layer, this is a huge hack that only works with PreloadingTimedLayers
-                layer.setTimeAndRange(layer._time, limitedRange[0], limitedRange[1]);
+                layer.setRange(limitedRange);
             } else {
                 console.log("No limited range for layer", layerName);
                 // TODO Warn somehow that no range was set for a layer?

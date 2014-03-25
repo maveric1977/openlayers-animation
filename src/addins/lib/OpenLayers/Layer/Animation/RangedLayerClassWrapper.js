@@ -1,24 +1,33 @@
 "use strict";
 
 (function() {
-    function in_range(t, start, end) {
-        return (start === undefined || t >= start) && (end === undefined || t <= end);
-    }
-
     OpenLayers.Layer.Animation.RangedLayerClassWrapper = function(klass, options) {
         return OpenLayers.Class(klass, {
+            initialize : function() {
+                klass.prototype.initialize.apply(this, arguments);
+                this._time = undefined;
+                this._range = undefined;
+            },
+
             setTime : function(t) {
-                if (in_range(t, this._start, this._end)) {
+                this._time = t;
+                if (OpenLayers.Layer.Animation.Utils.inRange(t, this._range)) {
                     options.timeSetter.apply(this, [t]);
                     options.inRange.apply(this);
                 } else {
                     options.outOfRange.apply(this);
                 }
             },
-            setTimeAndRange : function(time, start, end) {
-                this._start = start;
-                this._end = end;
+            setTimeAndRange : function(time, range) {
+                this._range = range;
                 this.setTime(time);
+            },
+            setRange : function(range) {
+                this._range = range;
+                if (this._time) {
+                    // Reset time to handle in/out-of-rangeness
+                    this.setTime(this._time);
+                }
             }
         });
     };

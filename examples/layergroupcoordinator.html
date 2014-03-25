@@ -74,15 +74,25 @@
 
             var wmsOptions = {transitionEffect: null};
 
+            var TimedWMSLayer = OpenLayers.Layer.Animation.TimedLayerClassWrapper(OpenLayers.Layer.WMS, {"timeSetter" : OpenLayers.Layer.Animation.TimedLayerClassWrapper.mergeParams});
+
             var preloader = new OpenLayers.Layer.Animation.PreloadAll(900000, range1);
             var observationLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Radar:suomi_rr_eureffin", {
-                "layerFactory" : function(t) {return new OpenLayers.Layer.WMS("Foo", wmsUrl, _.extend(_.clone(observationParams), {"TIME" : t.toISOString()}), wmsOptions)},
+                "layerFactory" : function(t) {
+            var result =  new TimedWMSLayer("Foo", wmsUrl, observationParams, wmsOptions);
+            result.setTime(t);
+            return result;
+            },
                 "preloadPolicy" : preloader,
                 "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange()
             });
 
             var predictionLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Radar:suomi_tuliset_rr_eureffin", {
-                "layerFactory" : function(t) {return new OpenLayers.Layer.WMS("Bar", wmsUrl, _.extend(_.clone(predictionParams), {"TIME" : t.toISOString()}), wmsOptions)},
+                "layerFactory" : function(t) {
+            var result =  new TimedWMSLayer("Foo", wmsUrl, predictionParams, wmsOptions);
+            result.setTime(t);
+            return result;
+            },
                 "preloadPolicy" : preloader,
                 "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange()
             });

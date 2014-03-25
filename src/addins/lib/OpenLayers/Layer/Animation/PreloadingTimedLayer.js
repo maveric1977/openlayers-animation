@@ -1,6 +1,8 @@
 "use strict";
 
-OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.Layer, {
+(function() {
+    OpenLayers.Layer.Animation.PreloadingTimedLayer = 
+    OpenLayers.Class(OpenLayers.Layer, OpenLayers.Layer.Animation.TimedLayer, OpenLayers.Layer.Animation.TimedLayer, {
 
     initialize : function(name, options) {
         OpenLayers.Layer.prototype.initialize.call(this, name, options);
@@ -13,9 +15,8 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         this._preloadPolicy = options.preloadPolicy;
         this._retainPolicy = options.retainPolicy;
 
-        this._time = undefined; // set through setTime/setTimeAndRange, TODO what does undefined mean?
-        this._start = undefined; // set through setTimeAndRange, undefined means unlimited
-        this._end = undefined; // set through setTimeAndRange, undefined means unlimited
+        this._time = undefined; // set through setTime/setTimeAndRange
+        this._range = undefined; // set through setTimeAndRange, undefined element means unlimited in that direction
 
         this.events.register("added", this, this.addedToMap);
         this.events.register("removed", this, this.removedFromMap);
@@ -59,8 +60,7 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
     },
 
     setTime : function(t) {
-        if ((this._start !== undefined && t < this._start) || (this._end !== undefined && t > this._end)) {
-            // TODO Move in-range check to some utility? Import timestep.js from wmap?
+        if (!OpenLayers.Layer.Animation.Utils.inRange(t, this._range)) {
             // Don't set time if outside range
 
             // TODO Keep track of current layer/time
@@ -70,7 +70,7 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         }
         this._time = t;
         var layer = this.loadLayer(t);
-        console.log("Setting time", layer.name, t, this._start, this._end);
+        console.log("Setting time", layer.name, t, this._range);
 
         // TODO Switch layers through fader
         _.each(this._layers, function(layer) {layer.setOpacity(0);});
@@ -83,15 +83,27 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
 
     },
 
-    setTimeAndRange : function(time, start, end) {
-        this._start = start;
-        this._end = end;
+    getTime : function() {
+        return this._time;
+    },
 
-        // TODO Get time through an API
-        var loadedTimes = _.map(this._layers, function(v, k) {return new Date(v.params.TIME);});
-        var retainedTimes = this._retainPolicy.retain([start, end], loadedTimes);
+    getRange : function() {
+        return this._range;
+    },
+
+
+    setRange : function(range) {
+        this.setTimeAndRange(this._time, range);
+    },
+
+    setTimeAndRange : function(time, range) {
+        this._range = range;
+
+        var loadedTimes = _.invoke(this._layers, 'getTime'); // TimedLayer.getTime
+        var retainedTimes = this._retainPolicy.retain(range, loadedTimes);
         console.log("Loaded", loadedTimes);
         console.log("Retained", retainedTimes);
+        // Date.getTime
         var removedTimestamps = _.difference(_.invoke(loadedTimes, 'getTime'), _.invoke(retainedTimes, 'getTime'));
         console.log("Removed", removedTimestamps);
         _.each(removedTimestamps, function(removedTimestamp) {
@@ -128,6 +140,6 @@ OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.La
         OpenLayers.Layer.prototype.setZIndex.call(this, zIndex);
         _.each(this._layers, this.reconfigureLayer, this);
     }
+});})();
 
 
-});
