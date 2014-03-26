@@ -66,7 +66,6 @@
             if (!OpenLayers.Layer.Animation.Utils.inRange(t, this._range)) {
                 // Don't set time if outside range
 
-                // TODO Keep track of current layer/time
                 // TODO Use fader
                 _.each(this._layers, function(layer) {layer.setOpacity(0);});
                 return;
