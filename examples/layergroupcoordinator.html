@@ -140,6 +140,7 @@
               <!-- timedLayer.setVisibility(vis); -->
               coordinator.setTime(rounded);
               $("#time").html(rounded.toString() + " " + op);
+              $("#timegroup").html(coordinator.getCurrentRangeGroups());
             }, 1000);
 
 
@@ -150,6 +151,7 @@
     <body>
         <h2>WMS Animation</h2>
         <p id="time">
+        <p id="timegroup">
         </p>
         <div id="wmsMap" class="map">
             <!-- Animation WMS map will be inserted here. -->

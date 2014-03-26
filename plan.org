@@ -75,7 +75,8 @@
    - can't find any fault in logic
    - but configuration in test HTML sometimes expects that observations are available when they are not yet / forecasts are available when they no longer are
 * v3.1
-** TODO Get current time range(s) from coordinator
+** DONE Get current time range(s) from coordinator
+   CLOSED: [2014-03-26 Wed 17:17]
 
 * v3.2
 ** TODO Should layer limit itself to given resolution, or should that be handled in LayerGroupCoordinator?
