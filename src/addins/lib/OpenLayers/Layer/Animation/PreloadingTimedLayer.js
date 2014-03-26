@@ -15,7 +15,8 @@
         this._preloadPolicy = options.preloadPolicy;
         this._retainPolicy = options.retainPolicy;
 
-        this._time = undefined; // set through setTime/setTimeAndRange
+        this._currentLayer = undefined; // set through setTime
+        this._time = undefined; // set through setTime
         this._range = undefined; // set through setTimeAndRange, undefined element means unlimited in that direction
 
         this.events.register("added", this, this.addedToMap);
@@ -42,8 +43,11 @@
     reconfigureLayer : function(layer) {
         layer.setVisibility(this.getVisibility());
         layer.setZIndex(this.getZIndex());
-        layer.setOpacity(this.getOpacity());
-        // TODO Take into account that only "current" layer, if any, should be visible
+        if (layer === this._currentLayer) {
+            layer.setOpacity(this.getOpacity());
+        } else {
+            layer.setOpacity(0);
+        }
     },
 
     loadLayer : function(t) {
@@ -70,13 +74,13 @@
         }
         this._time = t;
         var layer = this.loadLayer(t);
+        this._currentLayer = layer;
         console.log("Setting time", layer.name, t, this._range);
 
         // TODO Switch layers through fader
-        _.each(this._layers, function(layer) {layer.setOpacity(0);});
-        layer.setOpacity(this.getOpacity());
+        _.each(this._layers, function(layer) {this.reconfigureLayer(layer);}, this);
 
-        var preloadTimes = this._preloadPolicy.preloadAt(t);
+        var preloadTimes = this._preloadPolicy.preloadAt(this, t);
         _.each(preloadTimes, function(preloadTime) {
             var preloadLayer = this.loadLayer(preloadTime);
         }, this);
