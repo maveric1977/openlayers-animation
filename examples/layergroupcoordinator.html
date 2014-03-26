@@ -99,6 +99,14 @@
             });
 
             var layers = [observationLayer, predictionLayer];
+
+            _.each(layers, function(layer) {
+            console.log("Registering handlers");
+              layer.events.register("framechanged", this, function(ev) {console.log(ev)});
+              layer.events.register("frameloadstarted", this, function(ev) {console.log(ev)});
+              layer.events.register("frameloadcomplete", this, function(ev) {console.log(ev)});
+            });
+
             var availableRanges = {
                "Weather:temperature" : [new Date(dates[0].getTime()-3600000), dates[6]],
                "Weather:temperature_forecast" : [dates[6], new Date(dates[13].getTime() + 3600000)]
@@ -135,7 +143,6 @@
               vis_idx = (vis_idx + 1) % visibilities.length;
 
               var rounded = new Date(t.getTime() - (t.getTime() % 900000));
-              console.log(rounded, op, vis);
               //timedLayer.setOpacity(op);
               <!-- timedLayer.setVisibility(vis); -->
               coordinator.setTime(rounded);

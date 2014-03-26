@@ -32,6 +32,10 @@
 
         initLayer : function(layer) {
             if (this.map) {
+                var me = this;
+                layer.events.register("loadstart", this, function() {me.events.triggerEvent("frameloadstarted", {"layer":this, "events":[{"time":layer.getTime()}]});});
+                layer.events.register("loadend", this, function() {me.events.triggerEvent("frameloadcomplete", {"layer":this, "events":[{"time":layer.getTime()}]});});
+
                 this.map.addLayer(layer);
             }
         },
@@ -73,7 +77,7 @@
             this._time = t;
             var layer = this.loadLayer(t);
             this._currentLayer = layer;
-            console.log("Setting time", layer.name, t, this._range);
+            this.events.triggerEvent("framechanged", {"layer":this, "events":[{"time":t}]});
 
             // TODO Switch layers through fader
             _.each(this._layers, function(layer) {this.reconfigureLayer(layer);}, this);
