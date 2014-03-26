@@ -101,8 +101,7 @@
             var layers = [observationLayer, predictionLayer];
 
             _.each(layers, function(layer) {
-            console.log("Registering handlers");
-              layer.events.register("framechanged", this, function(ev) {console.log(ev)});
+              layer.events.register("framechanged", this, function(ev) {$("#time").html(ev.events[0].time)});
               layer.events.register("frameloadstarted", this, function(ev) {console.log(ev)});
               layer.events.register("frameloadcomplete", this, function(ev) {console.log(ev)});
             });
@@ -146,7 +145,6 @@
               //timedLayer.setOpacity(op);
               <!-- timedLayer.setVisibility(vis); -->
               coordinator.setTime(rounded);
-              $("#time").html(rounded.toString() + " " + op);
               $("#timegroup").html(coordinator.getCurrentRangeGroups());
             }, 1000);
 
