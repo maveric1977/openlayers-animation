@@ -70,6 +70,10 @@
 ** DONE TimedLayer and RangedLayer in wrong "package"
     CLOSED: [2014-03-24 Mon 18:27]
     - moved from OpenLayers.Layer.x to OpenLayers.Layer.Animation.x
+** DONE Missing frames?? Generated URLs ok - sometimes just not shown?
+   CLOSED: [2014-03-26 Wed 11:54]
+   - can't find any fault in logic
+   - but configuration in test HTML sometimes expects that observations are available when they are not yet / forecasts are available when they no longer are
 * v3.1
 ** TODO Get current time range(s) from coordinator
 
@@ -98,5 +102,5 @@
      - pass old and new and cb to layer
      - fader does its thing over time and calls cb
      - cb does setVisible(false) on old layer
-* TODO
+
 ** legendinfo?
