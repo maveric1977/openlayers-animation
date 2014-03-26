@@ -79,7 +79,7 @@
             var preloader = new OpenLayers.Layer.Animation.PreloadAll(900000);
             var observationLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Radar:suomi_rr_eureffin", {
                 "layerFactory" : function(t) {
-            var result =  new TimedWMSLayer("Foo", wmsUrl, observationParams, wmsOptions);
+            var result =  new TimedWMSLayer("Observation", wmsUrl, observationParams, wmsOptions);
             result.setTime(t);
             return result;
             },
@@ -89,7 +89,7 @@
 
             var predictionLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Radar:suomi_tuliset_rr_eureffin", {
                 "layerFactory" : function(t) {
-            var result =  new TimedWMSLayer("Foo", wmsUrl, predictionParams, wmsOptions);
+            var result =  new TimedWMSLayer("Forecast", wmsUrl, predictionParams, wmsOptions);
             result.setTime(t);
             return result;
             },
