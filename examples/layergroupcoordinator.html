@@ -53,14 +53,15 @@
             // Zoom a little bit to make the initial view look better.
             map.zoomTo(1);
 
-            var wmsUrl = "http://wms.fmi.fi/fmi-apikey/" + "0c306c5d-bccb-482b-b6e7-3a2d3271a566" + "/geoserver/wms";
+            //var wmsUrl = "http://wms.fmi.fi/fmi-apikey/" + "0c306c5d-bccb-482b-b6e7-3a2d3271a566" + "/geoserver/wms";
+            var wmsUrl = "http://wms.fmi.fi/fmi-apikey/" + "a33c7c2a-5057-4170-a7d9-3c9dc966e322" + "/geoserver/wms";
             var observationParams = {
-            layers : "Radar:suomi_rr_eureffin",
+            layers : "Weather:temperature",
             transparent: true,
             };
 
             var predictionParams = {
-            layers : "Radar:suomi_tuliset_rr_eureffin",
+            layers : "Weather:temperature-forecast",
             transparent: true,
             };
 
@@ -77,7 +78,7 @@
             var TimedWMSLayer = OpenLayers.Layer.Animation.TimedLayerClassWrapper(OpenLayers.Layer.WMS, {"timeSetter" : OpenLayers.Layer.Animation.TimedLayerClassWrapper.mergeParams});
 
             var preloader = new OpenLayers.Layer.Animation.PreloadAll(900000);
-            var observationLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Radar:suomi_rr_eureffin", {
+            var observationLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Weather:temperature", {
                 "layerFactory" : function(t) {
             var result =  new TimedWMSLayer("Observation", wmsUrl, observationParams, wmsOptions);
             result.setTime(t);
@@ -87,7 +88,7 @@
                 "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange()
             });
 
-            var predictionLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Radar:suomi_tuliset_rr_eureffin", {
+            var predictionLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Weather:temperature_forecast", {
                 "layerFactory" : function(t) {
             var result =  new TimedWMSLayer("Forecast", wmsUrl, predictionParams, wmsOptions);
             result.setTime(t);
@@ -99,8 +100,8 @@
 
             var layers = [observationLayer, predictionLayer];
             var availableRanges = {
-               "Radar:suomi_rr_eureffin" : [new Date(dates[0].getTime()-3600000), dates[6]],
-               "Radar:suomi_tuliset_rr_eureffin" : [dates[6], new Date(dates[13].getTime() + 3600000)]
+               "Weather:temperature" : [new Date(dates[0].getTime()-3600000), dates[6]],
+               "Weather:temperature_forecast" : [dates[6], new Date(dates[13].getTime() + 3600000)]
             }
 
             var constraints = {
@@ -108,11 +109,11 @@
               rangeGroups : {
                 "observation" : {
                   "range" : [dates[0], dates[6]],
-                  "layers" : ["Radar:suomi_rr_eureffin"]
+                  "layers" : ["Weather:temperature"]
                 },
                 "prediction" : {
                   "range" : [dates[7], dates[13]],
-                  "layers" : ["Radar:suomi_tuliset_rr_eureffin"]
+                  "layers" : ["Weather:temperature_forecast"]
                 }
               }
             }
