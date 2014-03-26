@@ -99,9 +99,10 @@
 
             var layers = [observationLayer, predictionLayer];
             var availableRanges = {
-               "Radar:suomi_rr_eureffin" : [dates[0]-3600000, dates[6]],
-               "Radar:suomi_tuliset_rr_eureffin" : [dates[6], dates[13] + 3600000]
+               "Radar:suomi_rr_eureffin" : [new Date(dates[0].getTime()-3600000), dates[6]],
+               "Radar:suomi_tuliset_rr_eureffin" : [dates[6], new Date(dates[13].getTime() + 3600000)]
             }
+
             var constraints = {
               globalRange : range1,
               rangeGroups : {
