@@ -79,19 +79,14 @@
    CLOSED: [2014-03-26 Wed 17:17]
 
 * v3.2
-** TODO Should layer limit itself to given resolution, or should that be handled in LayerGroupCoordinator?
-    - *something* should ensure that a layer shows the
-      previous/next/some other time and most importantly doesn't try
-      to request invalid times
-      - layer should limit itself
-      - need timestep.js for that
-* v3.5
-** TODO Generate frame events
+** DONE Generate frame events
+   CLOSED: [2014-03-26 Wed 18:51]
    - frame load start
    - frame load end
-
+   - frame changed
 * v4
-** TODO Fading
+** DONE Fading
+   CLOSED: [2014-03-27 Thu 14:45]
    - pass fader function to TimeAwareLayerWrapper (and LayerSequenceCoordinator to enable fading between layers)
    - fader function receives old and new layer and performs fading however it pleases
      - either old or new layer may be undefined, in which case fader should just deal with the one that is defined
@@ -104,4 +99,13 @@
      - fader does its thing over time and calls cb
      - cb does setVisible(false) on old layer
 
+* v5
+** TODO Should layer limit itself to given resolution, or should that be handled in LayerGroupCoordinator?
+    - *something* should ensure that a layer shows the
+      previous/next/some other time and most importantly doesn't try
+      to request invalid times
+      - layer should limit itself
+      - need timestep.js for that
+
 ** legendinfo?
+

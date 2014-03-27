@@ -78,6 +78,7 @@
             var TimedWMSLayer = OpenLayers.Layer.Animation.TimedLayerClassWrapper(OpenLayers.Layer.WMS, {"timeSetter" : OpenLayers.Layer.Animation.TimedLayerClassWrapper.mergeParams});
 
             var preloader = new OpenLayers.Layer.Animation.PreloadAll(900000);
+            var fader = new OpenLayers.Layer.Animation.TimedFader(250, 1000/60);
             var observationLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Weather:temperature", {
                 "layerFactory" : function(t) {
             var result =  new TimedWMSLayer("Observation", wmsUrl, observationParams, wmsOptions);
@@ -85,7 +86,8 @@
             return result;
             },
                 "preloadPolicy" : preloader,
-                "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange()
+                "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange(),
+                "fader" : fader
             });
 
             var predictionLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Weather:temperature_forecast", {
@@ -95,7 +97,8 @@
             return result;
             },
                 "preloadPolicy" : preloader,
-                "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange()
+                "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange(),
+                "fader" : fader
             });
 
             var layers = [observationLayer, predictionLayer];

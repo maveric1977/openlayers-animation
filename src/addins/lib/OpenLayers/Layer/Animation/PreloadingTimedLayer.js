@@ -13,6 +13,7 @@
 
             this._preloadPolicy = options.preloadPolicy;
             this._retainPolicy = options.retainPolicy;
+            this._fader = options.fader;
 
             this._currentLayer = undefined; // set through setTime
             this._time = undefined; // set through setTime
@@ -70,17 +71,20 @@
             if (!OpenLayers.Layer.Animation.Utils.inRange(t, this._range)) {
                 // Don't set time if outside range
 
-                // TODO Use fader
-                _.each(this._layers, function(layer) {layer.setOpacity(0);});
+                // TODO Need to track whether fade is in progress?
+                // TODO setVisibility(false) on old layer after? setVisibility(true) on new layer before?
+                this._fader.fade(this, this._currentLayer, undefined, function() {});
+                this._currentLayer = undefined;
                 return;
             }
             this._time = t;
             var layer = this.loadLayer(t);
+            var previousLayer = this._currentLayer;
             this._currentLayer = layer;
             this.events.triggerEvent("framechanged", {"layer":this, "events":[{"time":t}]});
 
-            // TODO Switch layers through fader
-            _.each(this._layers, function(layer) {this.reconfigureLayer(layer);}, this);
+            // TODO Need to track whether fade is in progress?
+            this._fader.fade(this, previousLayer, layer, function() {});
 
             var preloadTimes = this._preloadPolicy.preloadAt(this, t);
             _.each(preloadTimes, function(preloadTime) {
