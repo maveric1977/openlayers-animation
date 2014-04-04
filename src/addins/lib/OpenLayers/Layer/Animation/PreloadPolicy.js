@@ -15,21 +15,28 @@ OpenLayers.Layer.Animation.PreloadPolicy = OpenLayers.Class({
 });
 
 OpenLayers.Layer.Animation.PreloadDisabled = OpenLayers.Class(OpenLayers.Layer.Animation.PreloadPolicy, {
+    initialize : function() {
+    },
     preloadAt : function(layer, t) {
         return [];
     }
 });
 
 OpenLayers.Layer.Animation.PreloadNext = OpenLayers.Class(OpenLayers.Layer.Animation.PreloadPolicy, {
-    initialize : function(step) {
-        this.step = step;
+    initialize : function() {
     },
-
     preloadAt : function(layer, t) {
-        var next = new Date(t.getTime() + this.step);
-        if (next > layer.getRange()[1]) {
-            console.log(t, "first", this.range[0]);
-            return [layer.getRange()[0]];
+        var range = layer.getRange();
+        var next = range.nextAvailable(t);
+        if (next <= t) {
+            console.log(t, "first", range);
+            var first = range.startTime();
+            if (first !== undefined) {
+                return [first];
+            } else {
+                // Impossile to guess what the next time might be.
+                return [];
+            }
         } else {
             console.log(t, "next", next);
             return [next];
@@ -38,21 +45,19 @@ OpenLayers.Layer.Animation.PreloadNext = OpenLayers.Class(OpenLayers.Layer.Anima
 });
 
 OpenLayers.Layer.Animation.PreloadAll = OpenLayers.Class(OpenLayers.Layer.Animation.PreloadPolicy, {
-    initialize : function(step) {
-        this.step = step;
+    initialize : function() {
     },
-
     preloadAt : function(layer, t) {
-        var times = [];
-        var t_preload;
         var range = layer.getRange();
-        for (t_preload = t.getTime(); t_preload <= range[1]; t_preload += this.step) {
-            times.push(new Date(t_preload));
+        var first = range.startTime();
+        var last = range.endTime();
+        if (first !== undefined && last !== undefined) {
+            // Mighjt return current time, even twice, but that shouldn't matter
+            var times = range.timesForInterval(t, last).concat(range.timesForInterval(first, t));
+            return _.uniq(times, false, function(x) {return x.getTime();});
+        } else {
+            // Can't preload all, one range endpoint undefined
+            return [];
         }
-        for (t_preload = range[0].getTime(); t_preload < t; t_preload += this.step) {
-            times.push(new Date(t_preload));
-        }
-
-        return times;
     }
 });

@@ -74,17 +74,20 @@
    CLOSED: [2014-03-26 Wed 11:54]
    - can't find any fault in logic
    - but configuration in test HTML sometimes expects that observations are available when they are not yet / forecasts are available when they no longer are
-* v3.1
+* DONE v3.1
+  CLOSED: [2014-03-28 Fri 15:02]
 ** DONE Get current time range(s) from coordinator
    CLOSED: [2014-03-26 Wed 17:17]
 
-* v3.2
+* DONE v3.2
+  CLOSED: [2014-03-28 Fri 15:02]
 ** DONE Generate frame events
    CLOSED: [2014-03-26 Wed 18:51]
    - frame load start
    - frame load end
    - frame changed
-* v4
+* DONE v4
+  CLOSED: [2014-03-28 Fri 15:02]
 ** DONE Fading
    CLOSED: [2014-03-27 Thu 14:45]
    - pass fader function to TimeAwareLayerWrapper (and LayerSequenceCoordinator to enable fading between layers)
@@ -98,14 +101,48 @@
      - pass old and new and cb to layer
      - fader does its thing over time and calls cb
      - cb does setVisible(false) on old layer
-
-* v5
-** TODO Should layer limit itself to given resolution, or should that be handled in LayerGroupCoordinator?
+* TODO v5
+** TODO Should ranged layer limit itself to given resolution, or should that be handled in LayerGroupCoordinator?
     - *something* should ensure that a layer shows the
       previous/next/some other time and most importantly doesn't try
       to request invalid times
       - layer should limit itself
-      - need timestep.js for that
+*** DONE Need timestep.js from wmap
+    CLOSED: [2014-03-28 Fri 13:21]
+    - added as dependency for now
+*** TODO Replace ranges with timestep.js
+    - can't be replaced in all places, e.g. for constraint time ranges
+      time ranges are actually the preferable solution, it seems
+**** NOPE Need to add contains() to timestep? no, just add time selection policy
+     CLOSED: [2014-03-28 Fri 15:29]
+**** DONE Need to all constrain() to timestep, to constrain it to start/end times
+     CLOSED: [2014-03-28 Fri 15:41]
+     - restricted already does almost that, but doesn't accept a timestep object, but rather the time step
+**** DONE Need to add support for semi-constraining to timestep
+     CLOSED: [2014-03-28 Fri 16:50]
+**** DONE Need to make constraints of timesteps available through api
+     CLOSED: [2014-03-28 Fri 17:25]
+**** DONE The time selection policy part is missing still
+     CLOSED: [2014-04-04 Fri 11:29]
+     - and still, spent the day fixing bugs and thinking about wmap
+       - added time slection policies, they are too simple
+**** TODO Rewrite RetainPolicy interface now that range is available through layer
+**** TODO Need to separate concepts of available range and visible range in layers
+     - if a single range is specified, then the time selection logic
+       needs to be pushed down to the range object, which is just wrong
+     - the information is already separate in LayerGroupCoordinator
+       - and the LayerGroupCoordinator interface is good
+     - already separated "shown time" and "requested time" in PreloadingTimedLayer
+       - should treat time as "requested time" for visible range purposes
+       - and "shown time" for available range purposes
+       - available range in PreloadingTimedLayer is not strictly necessary within PreloadingTimedLayer
+         - but policies need it:
+           - at least PreloadPolicy should be able to preload times outside visible range
+             - need concept of "extended visible range", which covers
+               all frames that may be selected by TimeSelector for times within visible range
 
+* v6
+*** TODO Range is still needed in certain places, make a class for it
+*** TODO Make a class for the constraint object
 ** legendinfo?
 

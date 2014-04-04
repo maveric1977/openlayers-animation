@@ -34,6 +34,7 @@
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="../deps/OpenLayers-2.13.1/OpenLayers.js"></script>
         <script type="text/javascript" src="../deps/lodash/lodash.compat-2.1.0-min.js"></script>
+        <script type="text/javascript" src="../deps/timestep.js"></script>
         <script type="text/javascript" src="../lib/openlayers-animation-1.0.1.js"></script>
 
         <script type="text/javascript">
@@ -77,7 +78,11 @@
 
             var TimedWMSLayer = OpenLayers.Layer.Animation.TimedLayerClassWrapper(OpenLayers.Layer.WMS, {"timeSetter" : OpenLayers.Layer.Animation.TimedLayerClassWrapper.mergeParams});
 
-            var preloader = new OpenLayers.Layer.Animation.PreloadAll(900000);
+            var retainer = new OpenLayers.Layer.Animation.RetainRange();
+            var nextTimeSelector = new OpenLayers.Layer.Animation.ShowNextAvailable();
+            var previousTimeSelector = new OpenLayers.Layer.Animation.ShowPreviousAvailable();
+            //var timeSelector = new OpenLayers.Layer.Animation.ShowOnlyAvailable();
+            var preloader = new OpenLayers.Layer.Animation.PreloadAll();
             var fader = new OpenLayers.Layer.Animation.TimedFader(250, 1000/60);
             var observationLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Weather:temperature", {
                 "layerFactory" : function(t) {
@@ -86,8 +91,9 @@
             return result;
             },
                 "preloadPolicy" : preloader,
-                "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange(),
-                "fader" : fader
+                "retainPolicy" : retainer,
+                "fader" : fader,
+                "timeSelector" : previousTimeSelector
             });
 
             var predictionLayer = new OpenLayers.Layer.Animation.PreloadingTimedLayer("Weather:temperature_forecast", {
@@ -97,8 +103,9 @@
             return result;
             },
                 "preloadPolicy" : preloader,
-                "retainPolicy" : new OpenLayers.Layer.Animation.RetainRange(),
-                "fader" : fader
+                "retainPolicy" : retainer,
+                "fader" : fader,
+                "timeSelector" : nextTimeSelector
             });
 
             var layers = [observationLayer, predictionLayer];
@@ -110,8 +117,8 @@
             });
 
             var availableRanges = {
-               "Weather:temperature" : [new Date(dates[0].getTime()-3600000), dates[6]],
-               "Weather:temperature_forecast" : [dates[6], new Date(dates[13].getTime() + 3600000)]
+               "Weather:temperature" : timestep.regular(900000, dates[0]),
+               "Weather:temperature_forecast" : timestep.regular(3600000, new Date(now - (now % 3600000)))
             }
 
             var constraints = {

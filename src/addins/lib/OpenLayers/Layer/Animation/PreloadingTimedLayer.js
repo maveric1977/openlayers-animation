@@ -14,9 +14,11 @@
             this._preloadPolicy = options.preloadPolicy;
             this._retainPolicy = options.retainPolicy;
             this._fader = options.fader;
+            this._timeSelector = options.timeSelector;
 
             this._currentLayer = undefined; // set through setTime
-            this._time = undefined; // set through setTime
+            this._requestedTime = undefined; // set through setTime
+            this._shownTime = undefined; // set through setTime
             this._range = undefined; // set through setTimeAndRange, undefined element means unlimited in that direction
 
             this.events.register("added", this, this.addedToMap);
@@ -67,26 +69,37 @@
             return layer;
         },
 
-        setTime : function(t) {
-            if (!OpenLayers.Layer.Animation.Utils.inRange(t, this._range)) {
+        setTime : function(requestedTime) {
+            //console.log("Request setting of time to", requestedTime, "on", this.name, "range", this.getRange());
+            var shownTime = this._timeSelector.selectTime(this, requestedTime);
+            console.log(requestedTime, "resulted in", shownTime, this.name);
+            if (shownTime === undefined) {
                 // Don't set time if outside range
 
-                // TODO Need to track whether fade is in progress?
+                // TODO Need to track whether fade is in progress? Should not start multiple faders concurrently.
                 // TODO setVisibility(false) on old layer after? setVisibility(true) on new layer before?
                 this._fader.fade(this, this._currentLayer, undefined, function() {});
                 this._currentLayer = undefined;
+
+                // TODO Should this event be generated?
+                this._requestedTime = requestedTime;
+                this._shownTime = undefined;
+                this.events.triggerEvent("framechanged", {"layer":this, "events":[{"time":requestedTime}]});
                 return;
             }
-            this._time = t;
-            var layer = this.loadLayer(t);
+            this._requestedTime = requestedTime;
+            this._shownTime = shownTime;
+            var layer = this.loadLayer(shownTime);
             var previousLayer = this._currentLayer;
             this._currentLayer = layer;
-            this.events.triggerEvent("framechanged", {"layer":this, "events":[{"time":t}]});
+            this.events.triggerEvent("framechanged", {"layer":this, "events":[{"time":requestedTime}]});
 
-            // TODO Need to track whether fade is in progress?
-            this._fader.fade(this, previousLayer, layer, function() {});
+            // TODO Need to track whether fade is in progress? Should not start multiple faders concurrently.
+            if (layer !== previousLayer) {
+                this._fader.fade(this, previousLayer, layer, function() {});
+            }
 
-            var preloadTimes = this._preloadPolicy.preloadAt(this, t);
+            var preloadTimes = this._preloadPolicy.preloadAt(this, shownTime);
             _.each(preloadTimes, function(preloadTime) {
                 var preloadLayer = this.loadLayer(preloadTime);
             }, this);
@@ -94,7 +107,7 @@
         },
 
         getTime : function() {
-            return this._time;
+            return this._requestedTime;
         },
 
         getRange : function() {
@@ -103,10 +116,11 @@
 
 
         setRange : function(range) {
-            this.setTimeAndRange(this._time, range);
+            this.setTimeAndRange(this._requestedTime, range);
         },
 
         setTimeAndRange : function(time, range) {
+            console.log("Setting range of", this.name, "to", range);
             this._range = range;
 
             var loadedTimes = _.invoke(this._layers, 'getTime'); // TimedLayer.getTime

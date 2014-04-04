@@ -68,7 +68,8 @@ module.exports = function(grunt) {
                     "OpenLayers" : true,
                     "fi" : true,
                     "requestAnimationFrame" : true,
-                    "_" : true
+                    "_" : true,
+                    "timestep" : true
                 }
             }
         },

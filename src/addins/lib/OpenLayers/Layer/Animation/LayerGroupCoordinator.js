@@ -2,6 +2,11 @@
 
 OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
 
+    /**
+     * @param {Array<Layer>} layers Array of layers that the coordinator should coordinate. Must noe be undefined or null.
+     * @param {Constraints} constraints Constraints object that defines visibility constraints between layers.
+     * @param {Object} availableRanges Mapping of layer name -> timestep, defines availability of data in the ranges.
+     */
     initialize : function(layers, constraints, availableRanges) {
         this._layers = {}; // Mapping layer id -> layer
         this._constraints = undefined; // Set in update()
@@ -12,28 +17,9 @@ OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
 
     // TODO Privatize properly
     // Ranges are described elsewhere
-    limitRange : function(rangeToLimit, limitRange) {
-        console.log(rangeToLimit, limitRange);
-        function pick(a, b, picker) {
-            if (a === undefined) {
-                return b;
-            } else if (b === undefined) {
-                return a;
-            } else {
-                return picker(a,b);
-            }
-        }
-        function lesser(a,b) {
-            return a < b ? a : b;
-        }
-        function greater(a,b) {
-            return a > b ? a : b;
-        }
-
-        var begin = pick(rangeToLimit[0], limitRange[0], greater);
-        var end = pick(rangeToLimit[1], limitRange[1], lesser);
-        
-        return [begin, end];
+    limitTimestep : function(timestepToLimit, limitRange) {
+        console.log(timestepToLimit, limitRange);
+        return timestep.restricted(limitRange[0], limitRange[1], timestepToLimit);
     },
 
     /**
@@ -61,27 +47,25 @@ OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
         //   - availableRanges are limited by the first rangeGroup.range whose .layers contains their id
     update : function(constraints, availableRanges) {
         this._constraints = constraints;
-        var constrainedRanges = {};
-        _.each(availableRanges, function(range, layerName) {
-            var globallyLimitedRange = this.limitRange(range, constraints.globalRange);
+        var restrictedTimesteps = {};
+        _.each(availableRanges, function(timestep, layerName) {
+            var globallyLimitedTimestep = this.limitTimestep(timestep, constraints.globalRange);
             var rangeGroupId = _.findKey(constraints.rangeGroups, function(rangeGroup) {
                 return _.contains(rangeGroup.layers, layerName);
             });
 
             var result;
             if (rangeGroupId === undefined) {
-                result = globallyLimitedRange;
+                result = globallyLimitedTimestep;
             } else {
-                result = this.limitRange(globallyLimitedRange, constraints.rangeGroups[rangeGroupId].range);
+                result = this.limitTimestep(globallyLimitedTimestep, constraints.rangeGroups[rangeGroupId].range);
             }
-            constrainedRanges[layerName] = result;
+            restrictedTimesteps[layerName] = result;
         }, this);
 
         _.each(this._layers, function(layer, layerName) {
-            var limitedRange = constrainedRanges[layerName];
+            var limitedRange = restrictedTimesteps[layerName];
             if (limitedRange !== undefined) {
-                // TODO Update ranges
-                // TODO *need* access to time of layer, this is a huge hack that only works with PreloadingTimedLayers
                 layer.setRange(limitedRange);
             } else {
                 console.log("No limited range for layer", layerName);

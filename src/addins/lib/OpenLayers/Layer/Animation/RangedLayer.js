@@ -9,9 +9,7 @@ OpenLayers.Layer.Animation.TimedLayer = OpenLayers.Class({
      * range endpoints mean that the range is not limited in that
      * direction.
      *
-     * @param {Array<Number>} range Start and end times of visible
-     *                              range. Inclusive. Components may
-     *                              be undefined.
+     * @param {timestep} range Renderable times.
      */
     setRange : function(range) {
         throw "This is an interface";
@@ -20,6 +18,7 @@ OpenLayers.Layer.Animation.TimedLayer = OpenLayers.Class({
     /**
      * Get current range for which this layer should be displayed.
      *
+     * @return {timestep} Renderable times.
      */
     getRange : function(range) {
         throw "This is an interface";
@@ -31,9 +30,7 @@ OpenLayers.Layer.Animation.TimedLayer = OpenLayers.Class({
      * setRange() and setTime() calls.
      *
      * @param {Date} time Time to set layer to.
-     * @param {Array<Number>} range Start and end times of visible
-     *                              range. Inclusive. Components may
-     *                              be undefined.
+     * @param {timestep} range Renderable times.
      */
     setTimeAndRange : function(time, range) {
         throw "This is an interface";
