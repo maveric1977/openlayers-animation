@@ -126,7 +126,8 @@
      CLOSED: [2014-04-04 Fri 11:29]
      - and still, spent the day fixing bugs and thinking about wmap
        - added time slection policies, they are too simple
-**** TODO Rewrite RetainPolicy interface now that range is available through layer
+**** DONE Rewrite RetainPolicy interface now that range is available through layer
+     CLOSED: [2014-04-04 Fri 12:19]
 **** TODO Need to separate concepts of available range and visible range in layers
      - if a single range is specified, then the time selection logic
        needs to be pushed down to the range object, which is just wrong

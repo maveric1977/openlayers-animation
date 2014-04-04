@@ -18,7 +18,7 @@ OpenLayers.Layer.Animation.RetainAll = OpenLayers.Class(OpenLayers.Layer.Animati
     initialize : function() {
     },
 
-    retain : function(range, times) {
+    retain : function(layer, times) {
         return times;
     }
 });
@@ -26,7 +26,8 @@ OpenLayers.Layer.Animation.RetainAll = OpenLayers.Class(OpenLayers.Layer.Animati
 OpenLayers.Layer.Animation.RetainRange = OpenLayers.Class(OpenLayers.Layer.Animation.RetainPolicy, {
     initialize : function() {
     },
-    retain : function(range, times) {
+    retain : function(layer, times) {
+        var range = layer.getRange();
         var start = range.startTime();
         var end = range.endTime();
         return _.filter(times, function(t) {return (start === undefined || t >= start) && (end === undefined || t <= end);});

@@ -124,7 +124,7 @@
             this._range = range;
 
             var loadedTimes = _.invoke(this._layers, 'getTime'); // TimedLayer.getTime
-            var retainedTimes = this._retainPolicy.retain(range, loadedTimes);
+            var retainedTimes = this._retainPolicy.retain(this, loadedTimes);
             console.log("Loaded", loadedTimes);
             console.log("Retained", retainedTimes);
             // Date.getTime
