@@ -1,9 +1,24 @@
 "use strict";
 
 (function() {
+    function checkOptions(options) {
+        if (!_.isFunction(options.layerFactory)) {
+            throw "layerFactory must be a function";
+        } else {
+            console.log(options.layerFactory);
+        }
+        var objectProps = ["preloadPolicy", "retainPolicy", "fader", "timeSelector"];
+        _.each(objectProps, function(propName) {
+            if (!_.isObject(options[propName])) {
+                throw (propName +" must be an object");
+            }
+        });
+    }
+
     OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.Layer, OpenLayers.Layer.Animation.TimedLayer, OpenLayers.Layer.Animation.TimedLayer, {
 
         initialize : function(name, options) {
+            checkOptions(options);
             OpenLayers.Layer.prototype.initialize.call(this, name, options);
             var _me = this;
 
