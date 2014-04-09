@@ -18,7 +18,7 @@ OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
     // TODO Privatize properly
     // Ranges are described elsewhere
     limitTimestep : function(timestepToLimit, limitRange) {
-        console.log(timestepToLimit, limitRange);
+        console.log("Limiting", timestepToLimit, limitRange);
         return timestep.restricted(limitRange[0], limitRange[1], timestepToLimit);
     },
 
