@@ -4,8 +4,6 @@
     function checkOptions(options) {
         if (!_.isFunction(options.layerFactory)) {
             throw "layerFactory must be a function";
-        } else {
-            console.log(options.layerFactory);
         }
         var objectProps = ["preloadPolicy", "retainPolicy", "fader", "timeSelector"];
         _.each(objectProps, function(propName) {
