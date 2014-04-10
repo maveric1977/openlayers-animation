@@ -83,6 +83,9 @@
         },
 
         setTime : function(requestedTime) {
+            if (requestedTime === undefined) {
+                throw "Cannot set time of layer " + this.name + " to undefined";
+            }
             //console.log("Request setting of time to", requestedTime, "on", this.name, "range", this.getRange());
             var shownTime = this._timeSelector.selectTime(this, requestedTime);
             console.log(requestedTime, "resulted in", shownTime, this.name);
@@ -124,7 +127,11 @@
         },
 
         getRange : function() {
-            return this._range;
+            if (this._range !== undefined) {
+                return this._range;
+            } else {
+                throw "Range not set for layer " + this.name;
+            }
         },
 
 
@@ -133,6 +140,11 @@
         },
 
         setTimeAndRange : function(time, range) {
+            // time may be undefined here, as a result of setRange before time has been set
+            if (range === undefined) {
+                throw "Cannot set time of layer " + this.name + " to undefined";
+            }
+
             console.log("Setting range of", this.name, "to", range);
             this._range = range;
 
