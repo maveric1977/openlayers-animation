@@ -18,7 +18,6 @@ OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
     // TODO Privatize properly
     // Ranges are described elsewhere
     limitTimestep : function(timestepToLimit, limitRange) {
-        console.log("Limiting", timestepToLimit, limitRange);
         return timestep.restricted(limitRange[0], limitRange[1], timestepToLimit);
     },
 
@@ -46,6 +45,7 @@ OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
         // - rangeGroups {groupName : {range:range, layers:layers}}
         //   - availableRanges are limited by the first rangeGroup.range whose .layers contains their id
     update : function(constraints, availableRanges) {
+        console.log("Available ranges", availableRanges);
         this._constraints = constraints;
         var restrictedTimesteps = {};
         _.each(availableRanges, function(timestep, layerName) {
@@ -60,6 +60,8 @@ OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
             } else {
                 result = this.limitTimestep(globallyLimitedTimestep, constraints.rangeGroups[rangeGroupId].range);
             }
+            console.log("Limited", layerName, "from", timestep, "to", result);
+
             restrictedTimesteps[layerName] = result;
         }, this);
 
@@ -68,8 +70,7 @@ OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
             if (limitedRange !== undefined) {
                 layer.setRange(limitedRange);
             } else {
-                console.log("No limited range for layer", layerName);
-                // TODO Warn somehow that no range was set for a layer?
+                throw "No limited range for layer " + layerName;
             }
         });
     },
