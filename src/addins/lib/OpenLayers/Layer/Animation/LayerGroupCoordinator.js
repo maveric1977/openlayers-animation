@@ -1,6 +1,14 @@
 "use strict";
 
-OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
+(function() {
+
+    // Ranges are described elsewhere
+    function limitTimestep(timestepToLimit, limitRange) {
+        return timestep.restricted(limitRange[0], limitRange[1], timestepToLimit);
+    }
+
+
+    OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
 
     /**
      * @param {Array<Layer>} layers Array of layers that the coordinator should coordinate. Must noe be undefined or null.
@@ -15,11 +23,6 @@ OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
         this.update(constraints, availableRanges);
     },
 
-    // TODO Privatize properly
-    // Ranges are described elsewhere
-    limitTimestep : function(timestepToLimit, limitRange) {
-        return timestep.restricted(limitRange[0], limitRange[1], timestepToLimit);
-    },
 
     /**
      * Get currently visible range groups.
@@ -85,3 +88,4 @@ OpenLayers.Layer.Animation.LayerGroupCoordinator = OpenLayers.Class({
     }
 
 });
+})();
