@@ -52,7 +52,7 @@
             this._constraints = constraints;
             var restrictedTimesteps = {};
             _.each(availableRanges, function(timestep, layerName) {
-                var globallyLimitedTimestep = this.limitTimestep(timestep, constraints.globalRange);
+                var globallyLimitedTimestep = limitTimestep(timestep, constraints.globalRange);
                 var rangeGroupId = _.findKey(constraints.rangeGroups, function(rangeGroup) {
                     return _.contains(rangeGroup.layers, layerName);
                 });
@@ -61,7 +61,7 @@
                 if (rangeGroupId === undefined) {
                     result = globallyLimitedTimestep;
                 } else {
-                    result = this.limitTimestep(globallyLimitedTimestep, constraints.rangeGroups[rangeGroupId].range);
+                    result = limitTimestep(globallyLimitedTimestep, constraints.rangeGroups[rangeGroupId].range);
                 }
                 console.log("Limited", layerName, "from", timestep, "to", result);
 
