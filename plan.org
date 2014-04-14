@@ -129,6 +129,13 @@
 **** DONE Rewrite RetainPolicy interface now that range is available through layer
      CLOSED: [2014-04-04 Fri 12:19]
 **** TODO Need to separate concepts of available range and visible range in layers
+     - largely because visible range of layer needs to correspond to timeline
+       - if single range is specified so that outermost (visible)
+         range is larger than inner (available) range, then the
+         combined range should show layer contents when inside outer
+         range but outside inner range
+         - yet the inner and outer ranges should have same rules
+           -> impossible
      - if a single range is specified, then the time selection logic
        needs to be pushed down to the range object, which is just wrong
      - the information is already separate in LayerGroupCoordinator
@@ -142,8 +149,42 @@
              - need concept of "extended visible range", which covers
                all frames that may be selected by TimeSelector for times within visible range
 
-* v6
-*** TODO Range is still needed in certain places, make a class for it
-*** TODO Make a class for the constraint object
+* TODO v6
+** DONE Timelines?
+   CLOSED: [2014-04-14 Mon 16:57]
+   - need to be able to control visibility of subsequent layers simply
+   - will form a matrix with time groups
+     - well, not quite - just a seaprate grouping
+** TODO Layer switching based on timelines, not layers
+   - need to rewrite layer switcher, apparently
+     - hmm, nope
+     - need to set displayLayerInSwitcher to false for all timeline layers
+     - then create pseudo layers that have displayLayerInSwitcher but that don't actually show anything
+       - and have those layers control visibility of the timelines through the coordinator
+** DONE Always set time in animator
+   CLOSED: [2014-04-14 Mon 18:03]
+   - so that something will actually be visible when the page loads
+** TODO Why does GetCapabilities update reset load state of layers?
+** TODO How are the gray/green/blue/red colors of loading bars determined?
+   - and especially what happens when you zoom?
+   - could work as follows:
+     - frame time is mapped to box
+     - box is initially gray
+     - gray -> blue on load start event
+     - gray -> green on load end event
+     - blue -> green on load start/end event if number of load start events matches number of load end events
+     - green -> blue on load start event if number of load start events greater than number of load end events
+     - any -> red on error event
+*** TODO Are error events currently generated at all?
+** TODO UI testing
+   - need example configurations
+** NOPE Ability to initiate preload externally?
+   CLOSED: [2014-04-11 Fri 16:11]
+   - nope, let's leave preload controlled by time setting and just set time eagerly
+* v7
+** TODO Range is still needed in certain places, make a class for it
+** TODO Make a class for the constraint object
+
+* v8
 ** legendinfo?
 
