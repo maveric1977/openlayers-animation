@@ -47,6 +47,9 @@
         // - globalRange - all availableRanges are limited to this
         // - rangeGroups {groupName : {range:range, layers:layers}}
         //   - availableRanges are limited by the first rangeGroup.range whose .layers contains their id
+        // - timelines {timelineName : [layers]}
+        //   - visibility can be controlled per-timeline
+        //   - layers contains layer ids
         update : function(constraints, availableRanges) {
             console.log("Available ranges", availableRanges);
             this._constraints = constraints;
@@ -85,7 +88,32 @@
         setTime : function(t) {
             this._time = t;
             _.invoke(this._layers, "setTime", t);
+        },
+
+        
+        /**
+         * Get timeline names
+         */
+        getTimelines : function() {
+            return _.keys(this._constraints.timelines);
+        },
+
+        /**
+         * Set visibility of all layers of a timeline
+         *
+         * Throws an exception if the timeline is not defined.
+         */
+        setTimelineVisibility : function(timeline, visibility) {
+            var layerIds = this._constraints.timelines[timeline];
+            if (layerIds !== undefined) {
+                _.each();
+            } else {
+                throw "No timeline " + timeline;
+            }
         }
+
+        // TODO Allow access to timeline visibility
+        // TODO Generate events when timeline visibility changes
 
     });
 })();
