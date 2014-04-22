@@ -49,8 +49,8 @@
         initLayer : function(layer) {
             if (this.map) {
                 var me = this;
-                layer.events.register("loadstart", this, function() {me.events.triggerEvent("frameloadstarted", {"layer":this, "events":[{"time":layer.getTime()}]});});
-                layer.events.register("loadend", this, function() {me.events.triggerEvent("frameloadcomplete", {"layer":this, "events":[{"time":layer.getTime()}]});});
+                layer.events.register("loadstart", this, function() {me.events.triggerEvent("frameloadstarted", {"layer":this, "events":[{"time":layer.getTime(), "layerName":layer.name}]});});
+                layer.events.register("loadend", this, function() {me.events.triggerEvent("frameloadcomplete", {"layer":this, "events":[{"time":layer.getTime(), "layerName":layer.name}]});});
 
                 this.map.addLayer(layer);
             }
