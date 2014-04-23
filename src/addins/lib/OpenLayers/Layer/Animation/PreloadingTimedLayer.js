@@ -28,6 +28,7 @@
             this._retainPolicy = options.retainPolicy;
             this._fader = options.fader;
             this._timeSelector = options.timeSelector;
+            this._legendInfoProvider = options.legendInfoProvider;
 
             this._currentLayer = undefined; // set through setTime
             this._requestedTime = undefined; // set through setTime
@@ -188,6 +189,15 @@
         setZIndex : function(zIndex) {
             OpenLayers.Layer.prototype.setZIndex.call(this, zIndex);
             _.each(this._layers, this.reconfigureLayer, this);
+        },
+
+        /**
+         * Same as getLegendInfo in Animation.js
+         * TODO Move documentation here
+         */
+        getLegendInfo : function() {
+            var embeddedLayer = this._layerFactory(new Date());
+            return this._legendInfoProvider.provideLegendInfo(embeddedLayer);
         }
     });
 })();
