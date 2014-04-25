@@ -101,7 +101,106 @@
      - pass old and new and cb to layer
      - fader does its thing over time and calls cb
      - cb does setVisible(false) on old layer
-* TODO v5
+* DONE v5
+  CLOSED: [2014-04-22 Tue 11:42]
+** DONE Timelines?
+   CLOSED: [2014-04-22 Tue 11:42]
+   - need to be able to control visibility of subsequent layers simply
+   - will form a matrix with time groups
+     - well, not quite - just a seaprate grouping
+** DONE Always set time in animator
+   CLOSED: [2014-04-14 Mon 18:03]
+   - so that something will actually be visible when the page loads
+** DONE Layer switching based on timelines, not layers
+   CLOSED: [2014-04-15 Tue 13:49]
+   - need to rewrite layer switcher, apparently
+     - hmm, nope
+     - need to set displayLayerInSwitcher to false for all timeline layers
+     - then create pseudo layers that have displayLayerInSwitcher but that don't actually show anything
+       - and have those layers control visibility of the timelines through the coordinator
+   - added ControlLayer on openlayers-animation side
+     - Layer that just overrides setVisibility to control other layers
+   - added getControlLayers to Factory2
+** NOPE args[0] == layer name problem
+   CLOSED: [2014-04-15 Tue 15:19]
+   - see factory2.js TODO notes
+   - can't be solved, it seems
+     - would need to instantiate layer just to get its name. nope
+** NOPE Ability to initiate preload externally?
+   CLOSED: [2014-04-11 Fri 16:11]
+   - nope, let's leave preload controlled by time setting and just set time eagerly
+* DONE v6
+  CLOSED: [2014-04-24 Thu 14:53]
+** DONE legendinfo?
+   CLOSED: [2014-04-23 Wed 14:00]
+   code should mostly work
+   - seems to work
+*** DONE How to get an actual layer object for the legend URL generator?
+    CLOSED: [2014-04-24 Thu 14:53]
+    - just generate a layer
+** DONE How are the gray/green/blue/red colors of loading bars determined?
+   CLOSED: [2014-04-24 Thu 14:53]
+   - and especially what happens when you zoom?
+   - could work as follows:
+     - frame time is mapped to box
+     - box is initially gray
+     - gray -> blue on load start event
+     - gray -> green on load end event
+     - blue -> green on load start/end event if number of load start events matches number of load end events
+     - green -> blue on load start event if number of load start events greater than number of load end events
+     - any -> red on error event
+   - done
+*** DONE Are error events currently generated at all?
+    CLOSED: [2014-04-24 Thu 13:45]
+    - nope, tested by setting wrong WMS layer name for a forecast layer
+      -> shows error images, but no error bars
+      - how to generate errors?
+        - PreloadingWhateverLayer needs to react to underlying layers' error events and generate load complete events with error?
+        - Currently the cells turn green, though - why?
+    - didn't quite figure out how to generate error events
+      - need to listen for tileerrors and track error state per child of PreloadingTimeLayer?
+    - now listen for tileerrors, and add error to load end event if one was generated between load start and load end
+*** DONE Why does GetCapabilities update reset load state of loading bars?
+    CLOSED: [2014-04-17 Thu 11:17]
+    - it causes redrawTimeCells, which resets state of cells back to initial
+      - should instead keep current state for the relevant time intervals
+    - doesn't anymore
+*** DONE Ensure progress indicators are positioned correctly after reload
+    CLOSED: [2014-04-24 Thu 14:53]
+    - currently leaves them where they are, which is just wrong
+*** DONE Zooming works beautifully
+    CLOSED: [2014-04-15 Tue 17:34]
+    - when layers load, they generate the necessary events
+*** DONE WTF re: i/cell
+    CLOSED: [2014-04-16 Wed 11:29]
+    - why doesn't console.log log actual i value?
+      - it does, misconception about the structure of events
+*** DONE Progress cells don't know their time range
+    CLOSED: [2014-04-17 Thu 11:17]
+    - they only react to an exact time
+      - end time?
+      - the load events from layers contain actual loaded times
+    - now they do
+*** DONE getCellByTime changes cell color
+    CLOSED: [2014-04-17 Thu 11:17]
+    - why?
+    - what is cellReadyColor?
+      - doesn't anymore
+*** DONE Cell colors?
+    CLOSED: [2014-04-17 Thu 11:17]
+    - _scaleConfig.cellReadyColor when cell is fetched with getCellByTime
+    - _scaleConfig.bgColor on progressCellColorToDefault
+    - _scaleConfig.cellErrorColor on error at loadFrameStartedCb/loadFrameCompleteCb
+    - _scaleConfig.cellLoadingColor on successful _scaleConfig.loadFrameStartedCb
+    - _scaleConfig.cellReadyColor on successful _scaleConfig.loadFrameCompleteCb
+
+* TODO v6 testing
+** TODO UI testing
+   - need example configurations
+     - Ville should provide
+       - did
+   - create example page which loads config given as query parameter
+* TODO v7
 ** TODO Should ranged layer limit itself to given resolution, or should that be handled in LayerGroupCoordinator?
     - *something* should ensure that a layer shows the
       previous/next/some other time and most importantly doesn't try
@@ -149,42 +248,14 @@
              - need concept of "extended visible range", which covers
                all frames that may be selected by TimeSelector for times within visible range
 
-* TODO v6
-** DONE Timelines?
-   CLOSED: [2014-04-14 Mon 16:57]
-   - need to be able to control visibility of subsequent layers simply
-   - will form a matrix with time groups
-     - well, not quite - just a seaprate grouping
-** TODO Layer switching based on timelines, not layers
-   - need to rewrite layer switcher, apparently
-     - hmm, nope
-     - need to set displayLayerInSwitcher to false for all timeline layers
-     - then create pseudo layers that have displayLayerInSwitcher but that don't actually show anything
-       - and have those layers control visibility of the timelines through the coordinator
-** DONE Always set time in animator
-   CLOSED: [2014-04-14 Mon 18:03]
-   - so that something will actually be visible when the page loads
-** TODO Why does GetCapabilities update reset load state of layers?
-** TODO How are the gray/green/blue/red colors of loading bars determined?
-   - and especially what happens when you zoom?
-   - could work as follows:
-     - frame time is mapped to box
-     - box is initially gray
-     - gray -> blue on load start event
-     - gray -> green on load end event
-     - blue -> green on load start/end event if number of load start events matches number of load end events
-     - green -> blue on load start event if number of load start events greater than number of load end events
-     - any -> red on error event
-*** TODO Are error events currently generated at all?
-** TODO UI testing
-   - need example configurations
-** NOPE Ability to initiate preload externally?
-   CLOSED: [2014-04-11 Fri 16:11]
-   - nope, let's leave preload controlled by time setting and just set time eagerly
-* v7
+* code quality
 ** TODO Range is still needed in certain places, make a class for it
 ** TODO Make a class for the constraint object
 
-* v8
-** legendinfo?
-
+* scheduling needed
+** TODO getcapabilities performance
+** TODO preload improvements?
+   - current preload system only preloads times withing the same timegroup
+     - shouldp robably preload over timegroup borders - how/when?
+** TODO Indicate which layer is still loading somehow
+   - otherwise it's impossible for user to report "this layer is slow", they can just report "everything is slow"
