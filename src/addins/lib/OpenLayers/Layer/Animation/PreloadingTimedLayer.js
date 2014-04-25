@@ -22,6 +22,7 @@
 
             this._layerFactory = options.layerFactory;
             this._layers = {}; // indexed by ISO 8601 time string
+            this._errors = {}; // latest errors of layers, indexed by ISO 8601 time string
             this._opacity = 1.0; // Not available through Layer, store locally
 
             this._preloadPolicy = options.preloadPolicy;
@@ -50,8 +51,22 @@
         initLayer : function(layer) {
             if (this.map) {
                 var me = this;
-                layer.events.register("loadstart", this, function() {me.events.triggerEvent("frameloadstarted", {"layer":this, "events":[{"time":layer.getTime(), "layerName":layer.name}]});});
-                layer.events.register("loadend", this, function() {me.events.triggerEvent("frameloadcomplete", {"layer":this, "events":[{"time":layer.getTime(), "layerName":layer.name}]});});
+                
+                layer.events.register("loadstart", this, function() {
+                    var layerKey = layer.getTime().toISOString();
+                    this._errors[layerKey] = undefined; // Reset error at load start
+                    me.events.triggerEvent("frameloadstarted", {"layer":this, "events":[{"time":layer.getTime(), "layerName":layer.name}]});
+                });
+
+                layer.events.register("loadend", this, function() {
+                    var layerKey = layer.getTime().toISOString();
+                    me.events.triggerEvent("frameloadcomplete", {"layer":this, "events":[{"time":layer.getTime(), "layerName":layer.name, "error":this._errors[layerKey]}]});
+                });
+
+                layer.events.register("tileerror", this, function(e) {
+                    var layerKey = layer.getTime().toISOString();
+                    this._errors[layerKey] = e;
+                });
 
                 this.map.addLayer(layer);
             }
