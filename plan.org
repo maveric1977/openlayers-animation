@@ -200,6 +200,12 @@
      - Ville should provide
        - did
    - create example page which loads config given as query parameter
+     - done
+*** TODO Even background map doesn't show with ilmatie confs
+*** TODO If only forecast layer configured, config parsing breaks
+*** TODO Should hide layers that have errors
+    - check how old layers do this
+      - or do they?
 * TODO v7
 ** TODO Should ranged layer limit itself to given resolution, or should that be handled in LayerGroupCoordinator?
     - *something* should ensure that a layer shows the
