@@ -16,6 +16,9 @@ OpenLayers.Layer.Animation.Fader = OpenLayers.Class({
 });
 
 OpenLayers.Layer.Animation.ImmediateFader = OpenLayers.Class(OpenLayers.Layer.Animation.Fader, {
+    initialize : function() {
+    },
+
     fade : function(parentLayer, fadeOut, fadeIn, afterFade) {
         if (fadeOut !== undefined) {
             fadeOut.setOpacity(0);
