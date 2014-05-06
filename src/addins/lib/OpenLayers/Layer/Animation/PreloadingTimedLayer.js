@@ -158,7 +158,7 @@
         setTimeAndRange : function(time, range) {
             // time may be undefined here, as a result of setRange before time has been set
             if (range === undefined) {
-                throw "Cannot set time of layer " + this.name + " to undefined";
+                throw "Cannot set range of layer " + this.name + " to undefined";
             }
 
             console.log("Setting range of", this.name, "to", range);
