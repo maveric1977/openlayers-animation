@@ -3,7 +3,7 @@
 /**
  * Interface for layers that support limiting their visible time range.
  */
-OpenLayers.Layer.Animation.TimedLayer = OpenLayers.Class({
+OpenLayers.Layer.Animation.RangedLayer = OpenLayers.Class({
     /**
      * Set range for which this layer should be displayed. Undefined
      * range endpoints mean that the range is not limited in that
