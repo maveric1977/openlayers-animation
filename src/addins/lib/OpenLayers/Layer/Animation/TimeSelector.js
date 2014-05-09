@@ -65,3 +65,21 @@ OpenLayers.Layer.Animation.ShowOnlyAvailable = OpenLayers.Class(OpenLayers.Layer
         }
     }
 });
+
+/**
+ * Show time selected by another policy if it'swithin range from requested.
+ */
+OpenLayers.Layer.Animation.ShowOnlyInrangeWrapper = OpenLayers.Class(OpenLayers.Layer.Animation.TimeSelector, {
+    initialize : function(innerPolicy, range) {
+        this.innerPolicy = innerPolicy;
+        this.range = range;
+    },
+    selectTime : function(layer, t) {
+        var innerSelected = this.innerPolicy.selectTime(layer, t);
+        if (innerSelected !== undefined && Math.abs(innerSelected.getTime() - t.getTime()) <= this.range) {
+            return innerSelected;
+        } else {
+            return undefined;
+        }
+    }
+});
