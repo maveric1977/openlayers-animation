@@ -35,6 +35,7 @@
             this._requestedTime = undefined; // set through setTime
             this._shownTime = undefined; // set through setTime
             this._range = undefined; // set through setTimeAndRange, undefined element means unlimited in that direction
+            this._dataRange = undefined; // set through setTimeAndRange, undefined element means unlimited in that direction
 
             this.events.register("added", this, this.addedToMap);
             this.events.register("removed", this, this.removedFromMap);
@@ -142,6 +143,36 @@
             return this._requestedTime;
         },
 
+        setDataRange : function(dataRange) {
+            if (dataRange === undefined) {
+                throw "Cannot set data range of layer " + this.name + " to undefined";
+            }
+            this.setTimeAndRange(this._requestedTime, this._range, dataRange);
+        },
+
+        getDataRange : function() {
+            if (this._dataRange !== undefined) {
+                return this._dataRange;
+            } else {
+                throw "Data range not set for layer " + this.name;
+            }
+        },
+
+        setVisibleRange : function(visibleRange) {
+            if (visibleRange === undefined) {
+                throw "Cannot set visible range of layer " + this.name + " to undefined";
+            }
+            this.setTimeAndRange(this._requestedTime, visibleRange, this._dataRange);
+        },
+
+        getVisibleRange : function() {
+            if (this._range !== undefined) {
+                return this._range;
+            } else {
+                throw "Visible range not set for layer " + this.name;
+            }
+        },
+
         getRange : function() {
             if (this._range !== undefined) {
                 return this._range;
@@ -150,19 +181,25 @@
             }
         },
 
-
-        setRange : function(range) {
-            this.setTimeAndRange(this._requestedTime, range);
+        setRange : function(visibleRange, availableRange) {
+            if (availableRange === undefined) {
+                availableRange = visibleRange;
+            }
+            this.setTimeAndRange(this._requestedTime, visibleRange, availableRange);
         },
 
-        setTimeAndRange : function(time, range) {
+        setTimeAndRange : function(time, range, dataRange) {
             // time may be undefined here, as a result of setRange before time has been set
             if (range === undefined) {
                 throw "Cannot set range of layer " + this.name + " to undefined";
             }
+            if (dataRange === undefined) {
+                dataRange = range;
+            }
 
-            console.log("Setting range of", this.name, "to", range);
+            console.log("Setting ranges of", this.name, "to", range, dataRange);
             this._range = range;
+            this._dataRange = dataRange;
 
             var loadedTimes = _.invoke(this._layers, 'getTime'); // TimedLayer.getTime
             var retainedTimes = this._retainPolicy.retain(this, loadedTimes);
