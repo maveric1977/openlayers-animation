@@ -54,8 +54,12 @@
             console.log("Available ranges", availableRanges);
             this._constraints = constraints;
             var restrictedTimesteps = {};
-            _.each(availableRanges, function(timestep, layerName) {
-                var globallyLimitedTimestep = limitTimestep(timestep, constraints.globalRange);
+            var availableTimesteps = {};
+            _.each(availableRanges, function(availableRange, layerName) {
+                availableTimesteps[layerName] = availableRange;
+
+                // TODO Should get actual timestep value from somewhere
+                var globallyLimitedTimestep = timestep.restricted(constraints.globalRange[0], constraints.globalRange[1], 300000);
                 var rangeGroupId = _.findKey(constraints.rangeGroups, function(rangeGroup) {
                     return _.contains(rangeGroup.layers, layerName);
                 });
@@ -66,17 +70,17 @@
                 } else {
                     result = limitTimestep(globallyLimitedTimestep, constraints.rangeGroups[rangeGroupId].range);
                 }
-                console.log("Limited", layerName, "from", timestep, "to", result);
 
                 restrictedTimesteps[layerName] = result;
             }, this);
 
             _.each(this._layers, function(layer, layerName) {
                 var limitedRange = restrictedTimesteps[layerName];
-                if (limitedRange !== undefined) {
-                    layer.setRange(limitedRange);
+                var availableRange = availableTimesteps[layerName];
+                if (limitedRange !== undefined && availableRange !== undefined) {
+                    layer.setRange(limitedRange, availableRange);
                 } else {
-                    throw "No limited range for layer " + layerName;
+                    throw "Undefined range for layer " + layerName + ", visible: " + limitedRange + ", available: " + availableRange;
                 }
             });
         },
