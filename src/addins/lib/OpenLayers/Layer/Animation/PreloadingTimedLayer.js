@@ -22,6 +22,7 @@
 
             this._layerFactory = options.layerFactory;
             this._layers = {}; // indexed by ISO 8601 time string
+            this._visibilityMap = {}; // whether layer should be visible or not, indexed by ISO 8601 time string
             this._errors = {}; // latest errors of layers, indexed by ISO 8601 time string
             this._opacity = 1.0; // Not available through Layer, store locally
 
@@ -77,13 +78,20 @@
          * Add layer to map if available, set event listeners, set visibility and Z index
          */
         reconfigureLayer : function(layer) {
-            layer.setVisibility(this.getVisibility());
+            var k = layer.getTime().toISOString();
+            layer.setVisibility(this.getVisibility() && this._visibilityMap[k]);
             layer.setZIndex(this.getZIndex());
             if (layer === this._currentLayer) {
                 layer.setOpacity(this.getOpacity());
             } else {
                 layer.setOpacity(0);
             }
+        },
+
+        setSubLayerVisibility : function(layer, visibility) {
+            var k = layer.getTime().toISOString();
+            this._visibilityMap[k] = visibility;
+            layer.setVisibility(this.getVisibility() && this._visibilityMap[k]);
         },
 
         loadLayer : function(t) {
@@ -104,14 +112,19 @@
                 throw "Cannot set time of layer " + this.name + " to undefined";
             }
             //console.log("Request setting of time to", requestedTime, "on", this.name, "range", this.getRange());
+            var previousLayer = this._currentLayer;
+            var hidePrevious = _.bind(function() {
+                if (previousLayer !== undefined) {
+                    this.setSubLayerVisibility(previousLayer, false);
+                }
+            }, this);
             var shownTime = this._timeSelector.selectTime(this, requestedTime);
             console.log(requestedTime, "resulted in", shownTime, this.name);
             if (shownTime === undefined) {
                 // Don't set time if outside range
 
                 // TODO Need to track whether fade is in progress? Should not start multiple faders concurrently.
-                // TODO setVisibility(false) on old layer after? setVisibility(true) on new layer before?
-                this._fader.fade(this, this._currentLayer, undefined, function() {});
+                this._fader.fade(this, previousLayer, undefined, hidePrevious);
                 this._currentLayer = undefined;
 
                 // TODO Should this event be generated?
@@ -123,13 +136,13 @@
             this._requestedTime = requestedTime;
             this._shownTime = shownTime;
             var layer = this.loadLayer(shownTime);
-            var previousLayer = this._currentLayer;
             this._currentLayer = layer;
             this.events.triggerEvent("framechanged", {"layer":this, "events":[{"time":requestedTime}]});
 
             // TODO Need to track whether fade is in progress? Should not start multiple faders concurrently.
             if (layer !== previousLayer) {
-                this._fader.fade(this, previousLayer, layer, function() {});
+                this.setSubLayerVisibility(layer, true);
+                this._fader.fade(this, previousLayer, layer, hidePrevious);
             }
 
             var preloadTimes = this._preloadPolicy.preloadAt(this, shownTime);
