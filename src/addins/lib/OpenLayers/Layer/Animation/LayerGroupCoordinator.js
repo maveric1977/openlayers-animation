@@ -19,7 +19,7 @@
             this._layers = {}; // Mapping layer id -> layer
             this._constraints = undefined; // Set in update()
             this._time = undefined; // Set in setTime()
-            _.each(layers, function(l) {this._layers[l.name] = l;}, this);
+            _.each(layers, function(l) {this._layers[l.id] = l;}, this);
             this.update(constraints, availableRanges);
         },
 
@@ -55,13 +55,13 @@
             this._constraints = constraints;
             var restrictedTimesteps = {};
             var availableTimesteps = {};
-            _.each(availableRanges, function(availableRange, layerName) {
-                availableTimesteps[layerName] = availableRange;
+            _.each(availableRanges, function(availableRange, layerId) {
+                availableTimesteps[layerId] = availableRange;
 
                 // TODO Should get actual timestep value from somewhere
                 var globallyLimitedTimestep = timestep.restricted(constraints.globalRange[0], constraints.globalRange[1], 300000);
                 var rangeGroupId = _.findKey(constraints.rangeGroups, function(rangeGroup) {
-                    return _.contains(rangeGroup.layers, layerName);
+                    return _.contains(rangeGroup.layers, layerId);
                 });
 
                 var result;
@@ -71,16 +71,17 @@
                     result = limitTimestep(globallyLimitedTimestep, constraints.rangeGroups[rangeGroupId].range);
                 }
 
-                restrictedTimesteps[layerName] = result;
+                restrictedTimesteps[layerId] = result;
             }, this);
 
-            _.each(this._layers, function(layer, layerName) {
-                var limitedRange = restrictedTimesteps[layerName];
-                var availableRange = availableTimesteps[layerName];
+            _.each(this._layers, function(layer, layerId) {
+                var limitedRange = restrictedTimesteps[layerId];
+                var availableRange = availableTimesteps[layerId];
                 if (limitedRange !== undefined && availableRange !== undefined) {
+
                     layer.setRange(limitedRange, availableRange);
                 } else {
-                    throw "Undefined range for layer " + layerName + ", visible: " + limitedRange + ", available: " + availableRange;
+                    throw "Undefined range for layer " + layer.name + ", visible: " + limitedRange + ", available: " + availableRange;
                 }
             });
         },
