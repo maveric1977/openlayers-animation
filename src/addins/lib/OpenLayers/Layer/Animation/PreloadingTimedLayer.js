@@ -5,12 +5,20 @@
         if (!_.isFunction(options.layerFactory)) {
             throw "layerFactory must be a function";
         }
-        var objectProps = ["preloadPolicy", "retainPolicy", "fader", "timeSelector"];
+        var objectProps = ["preloadPolicy", "retainPolicy", "fader", "timeSelector", "legendInfoProvider"];
         _.each(objectProps, function(propName) {
             if (!_.isObject(options[propName])) {
                 throw (propName +" must be an object");
             }
         });
+
+        var functionProps = ["layerFactory"];
+        _.each(functionProps, function(propName) {
+            if (!_.isFunction(options[propName])) {
+                throw (propName +" must be a function");
+            }
+        });
+
     }
 
     OpenLayers.Layer.Animation.PreloadingTimedLayer = OpenLayers.Class(OpenLayers.Layer, OpenLayers.Layer.Animation.TimedLayer, OpenLayers.Layer.Animation.RangedLayer, {
