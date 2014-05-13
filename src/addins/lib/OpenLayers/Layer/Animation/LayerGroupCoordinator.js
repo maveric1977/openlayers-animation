@@ -51,37 +51,27 @@
         //   - visibility can be controlled per-timeline
         //   - layers contains layer ids
         update : function(constraints, availableRanges) {
-            console.log("Available ranges", availableRanges);
             this._constraints = constraints;
-            var restrictedTimesteps = {};
-            var availableTimesteps = {};
-            _.each(availableRanges, function(availableRange, layerId) {
-                availableTimesteps[layerId] = availableRange;
 
+            _.each(this._layers, function(layer, layerId) {
                 // TODO Should get actual timestep value from somewhere
                 var globallyLimitedTimestep = timestep.restricted(constraints.globalRange[0], constraints.globalRange[1], 300000);
                 var rangeGroupId = _.findKey(constraints.rangeGroups, function(rangeGroup) {
-                    return _.contains(rangeGroup.layers, layerId);
+                    return _.contains(rangeGroup.layers, layer.name);
                 });
 
-                var result;
+                var limitedRange;
                 if (rangeGroupId === undefined) {
-                    result = globallyLimitedTimestep;
+                    limitedRange = globallyLimitedTimestep;
                 } else {
-                    result = limitTimestep(globallyLimitedTimestep, constraints.rangeGroups[rangeGroupId].range);
+                    limitedRange = limitTimestep(globallyLimitedTimestep, constraints.rangeGroups[rangeGroupId].range);
                 }
 
-                restrictedTimesteps[layerId] = result;
-            }, this);
-
-            _.each(this._layers, function(layer, layerId) {
-                var limitedRange = restrictedTimesteps[layerId];
-                var availableRange = availableTimesteps[layerId];
+                var availableRange = availableRanges[layerId];
                 if (limitedRange !== undefined && availableRange !== undefined) {
-
                     layer.setRange(limitedRange, availableRange);
                 } else {
-                    throw "Undefined range for layer " + layer.name + ", visible: " + limitedRange + ", available: " + availableRange;
+                    throw "Undefined range for layer " + layer.name + ", available: " + availableRange;
                 }
             });
         },
