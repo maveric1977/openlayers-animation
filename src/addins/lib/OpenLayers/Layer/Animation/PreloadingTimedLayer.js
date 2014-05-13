@@ -25,6 +25,7 @@
             this._visibilityMap = {}; // whether layer should be visible or not, indexed by ISO 8601 time string
             this._errors = {}; // latest errors of layers, indexed by ISO 8601 time string
             this._opacity = 1.0; // Not available through Layer, store locally
+            this._capabilities = options.capabilities; // URL and layer for capabilities request, may be undefined
 
             this._preloadPolicy = options.preloadPolicy;
             this._retainPolicy = options.retainPolicy;
@@ -263,6 +264,13 @@
         getLegendInfo : function() {
             var embeddedLayer = this._layerFactory(new Date());
             return this._legendInfoProvider.provideLegendInfo(embeddedLayer);
+        },
+
+        /**
+         * Get capabilities request information
+         */
+        getCapabilities : function() {
+            return this._capabilities;
         }
     });
 })();
