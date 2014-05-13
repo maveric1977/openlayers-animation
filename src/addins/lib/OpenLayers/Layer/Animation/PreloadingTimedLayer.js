@@ -102,6 +102,7 @@
                 console.log("Loading", t);
                 layer = this._layerFactory(t);
                 this.initLayer(layer);
+                this._visibilityMap[k] = true; // Everything is always setVisible to true if the parent layer is, see ILMANET-1014
                 this.reconfigureLayer(layer);
                 this._layers[k] = layer;
             }
@@ -114,11 +115,15 @@
             }
             //console.log("Request setting of time to", requestedTime, "on", this.name, "range", this.getRange());
             var previousLayer = this._currentLayer;
-            var hidePrevious = _.bind(function() {
-                if (previousLayer !== undefined) {
-                    this.setSubLayerVisibility(previousLayer, false);
-                }
-            }, this);
+
+            // TODO Should hide faded-out layer, but that makes animation ugly, see ILMANET-1014
+            var hidePrevious = function() {};
+            // var hidePrevious = _.bind(function() {
+            //     if (previousLayer !== undefined) {
+            //         this.setSubLayerVisibility(previousLayer, false);
+            //     }
+            // }, this);
+
             var shownTime = this._timeSelector.selectTime(this, requestedTime);
             console.log(requestedTime, "resulted in", shownTime, this.name);
             if (shownTime === undefined) {
@@ -142,7 +147,8 @@
 
             // TODO Need to track whether fade is in progress? Should not start multiple faders concurrently.
             if (layer !== previousLayer) {
-                this.setSubLayerVisibility(layer, true);
+                // TODO Should set new layer to visible before fading, but that makes animation ugly, see ILMANET-1014
+                // this.setSubLayerVisibility(layer, true);
                 this._fader.fade(this, previousLayer, layer, hidePrevious);
             }
 
