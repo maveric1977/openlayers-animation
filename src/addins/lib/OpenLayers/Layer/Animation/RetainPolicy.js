@@ -11,7 +11,9 @@ OpenLayers.Layer.Animation.RetainPolicy = OpenLayers.Class({
      */
     retain : function(times) {
         throw "This is an interface";
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.RetainPolicy"
 });
 
 OpenLayers.Layer.Animation.RetainAll = OpenLayers.Class(OpenLayers.Layer.Animation.RetainPolicy, {
@@ -20,7 +22,9 @@ OpenLayers.Layer.Animation.RetainAll = OpenLayers.Class(OpenLayers.Layer.Animati
 
     retain : function(layer, times) {
         return times;
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.RetainAll"
 });
 
 OpenLayers.Layer.Animation.RetainRange = OpenLayers.Class(OpenLayers.Layer.Animation.RetainPolicy, {
@@ -31,6 +35,8 @@ OpenLayers.Layer.Animation.RetainRange = OpenLayers.Class(OpenLayers.Layer.Anima
         var start = range.startTime();
         var end = range.endTime();
         return _.filter(times, function(t) {return (start === undefined || t >= start) && (end === undefined || t <= end);});
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.RetainRange"
 });
 

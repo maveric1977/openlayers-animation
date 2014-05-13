@@ -14,7 +14,9 @@ OpenLayers.Layer.Animation.TimedLayerClassWrapper = function(klass, options) {
 
         getTime : function() {
             return this._time;
-        }
+        },
+
+        CLASS_NAME : "OpenLayers.Layer.Animation.TimedLayerClassWrapper(" + klass.CLASS_NAME + ")"
     });
 };
 

@@ -10,7 +10,9 @@ OpenLayers.Layer.Animation.TimeSelector = OpenLayers.Class({
      */
     selectTime : function(rangedLayer, t) {
         throw "This is an interface";
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.TimeSelector"
 });
 
 OpenLayers.Layer.Animation.ShowPreviousAvailable = OpenLayers.Class(OpenLayers.Layer.Animation.TimeSelector, {
@@ -26,7 +28,9 @@ OpenLayers.Layer.Animation.ShowPreviousAvailable = OpenLayers.Class(OpenLayers.L
         } else {
             return undefined;
         }
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.ShowPreviousAvailable"
 });
 
 OpenLayers.Layer.Animation.ShowNextAvailable = OpenLayers.Class(OpenLayers.Layer.Animation.TimeSelector, {
@@ -42,7 +46,9 @@ OpenLayers.Layer.Animation.ShowNextAvailable = OpenLayers.Class(OpenLayers.Layer
         } else {
             return undefined;
         }
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.ShowNextAvailable"
 });
 
 OpenLayers.Layer.Animation.ShowOnlyAvailable = OpenLayers.Class(OpenLayers.Layer.Animation.TimeSelector, {
@@ -63,7 +69,9 @@ OpenLayers.Layer.Animation.ShowOnlyAvailable = OpenLayers.Class(OpenLayers.Layer
         } else {
             return undefined;
         }
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.ShowOnlyAvailable"
 });
 
 /**
@@ -81,5 +89,7 @@ OpenLayers.Layer.Animation.ShowOnlyInrangeWrapper = OpenLayers.Class(OpenLayers.
         } else {
             return undefined;
         }
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.ShowOnlyInrangeWrapper"
 });

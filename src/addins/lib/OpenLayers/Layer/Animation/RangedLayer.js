@@ -76,4 +76,5 @@ OpenLayers.Layer.Animation.RangedLayer = OpenLayers.Class({
         throw "This is an interface";
     },
 
+    CLASS_NAME : "OpenLayers.Layer.Animation.RangedLayer"
 });

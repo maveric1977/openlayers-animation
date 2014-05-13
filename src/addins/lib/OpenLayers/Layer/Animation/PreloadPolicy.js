@@ -11,7 +11,9 @@ OpenLayers.Layer.Animation.PreloadPolicy = OpenLayers.Class({
      */
     preloadAt : function(rangedLayer, t) {
         throw "This is an interface";
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.PreloadPolicy"
 });
 
 OpenLayers.Layer.Animation.PreloadDisabled = OpenLayers.Class(OpenLayers.Layer.Animation.PreloadPolicy, {
@@ -19,7 +21,9 @@ OpenLayers.Layer.Animation.PreloadDisabled = OpenLayers.Class(OpenLayers.Layer.A
     },
     preloadAt : function(layer, t) {
         return [];
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.PreloadDisabled"
 });
 
 OpenLayers.Layer.Animation.PreloadNext = OpenLayers.Class(OpenLayers.Layer.Animation.PreloadPolicy, {
@@ -41,7 +45,9 @@ OpenLayers.Layer.Animation.PreloadNext = OpenLayers.Class(OpenLayers.Layer.Anima
             console.log(t, "next", next);
             return [next];
         }
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.PreloadNext"
 });
 
 OpenLayers.Layer.Animation.PreloadAll = OpenLayers.Class(OpenLayers.Layer.Animation.PreloadPolicy, {
@@ -59,5 +65,7 @@ OpenLayers.Layer.Animation.PreloadAll = OpenLayers.Class(OpenLayers.Layer.Animat
             // Can't preload all, one range endpoint undefined
             return [];
         }
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.PreloadAll"
 });

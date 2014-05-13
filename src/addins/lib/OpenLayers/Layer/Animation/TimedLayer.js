@@ -22,5 +22,7 @@ OpenLayers.Layer.Animation.TimedLayer = OpenLayers.Class({
      */
     getTime : function() {
         throw "This is an interface";
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.TimedLayer"
 });

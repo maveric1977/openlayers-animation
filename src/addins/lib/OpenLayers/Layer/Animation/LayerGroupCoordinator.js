@@ -93,5 +93,7 @@
             return _.keys(this._constraints.timelines);
         },
 
+
+        CLASS_NAME : "OpenLayers.Layer.Animation.LayerGroupCoordinator"
     });
 })();

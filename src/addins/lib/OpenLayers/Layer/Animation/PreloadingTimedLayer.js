@@ -277,6 +277,8 @@
          */
         getCapabilities : function() {
             return this._capabilities;
-        }
+        },
+
+        CLASS_NAME : "OpenLayers.Layer.Animation.PreloadingTimedLayer"
     });
 })();

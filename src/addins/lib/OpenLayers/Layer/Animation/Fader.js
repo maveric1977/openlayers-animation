@@ -12,7 +12,9 @@ OpenLayers.Layer.Animation.Fader = OpenLayers.Class({
      */
     fade : function(parentLayer, fadeOut, fadeIn, afterFade) {
         throw "This is an interface";
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.Fader"
 });
 
 OpenLayers.Layer.Animation.ImmediateFader = OpenLayers.Class(OpenLayers.Layer.Animation.Fader, {
@@ -27,7 +29,9 @@ OpenLayers.Layer.Animation.ImmediateFader = OpenLayers.Class(OpenLayers.Layer.An
             fadeIn.setOpacity(parentLayer.getOpacity());
         }
         afterFade();
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.ImmediateFader"
 });
 
 OpenLayers.Layer.Animation.TimedFader = OpenLayers.Class(OpenLayers.Layer.Animation.Fader, {
@@ -64,5 +68,7 @@ OpenLayers.Layer.Animation.TimedFader = OpenLayers.Class(OpenLayers.Layer.Animat
                 afterFade();
             }
         }, this.step);
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.TimedFader"
 });

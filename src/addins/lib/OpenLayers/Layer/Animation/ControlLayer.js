@@ -14,6 +14,8 @@
             _.each(this._layers, function(layer) {
                 layer.setVisibility(visibility);
             });
-        }
+        },
+
+        CLASS_NAME : "OpenLayers.Layer.Animation.ControlLayer"
     });
 })();

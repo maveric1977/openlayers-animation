@@ -9,7 +9,9 @@ OpenLayers.Layer.Animation.LegendInfoProvider = OpenLayers.Class({
      */
     provideLegendInfo : function(preloadingLayer) {
         throw "This is an interface";
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.LegendInfoProvider"
 });
 
 OpenLayers.Layer.Animation.DisabledLegendInfoProvider = OpenLayers.Class(OpenLayers.Layer.Animation.LegendInfoProvider, {
@@ -17,7 +19,9 @@ OpenLayers.Layer.Animation.DisabledLegendInfoProvider = OpenLayers.Class(OpenLay
     },
     provideLegendInfo : function(rangedLayer) {
         return [];
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.DisabledLegendInfoProvider"
 });
 
 OpenLayers.Layer.Animation.FixedLegendInfoProvider = OpenLayers.Class(OpenLayers.Layer.Animation.LegendInfoProvider, {
@@ -26,7 +30,9 @@ OpenLayers.Layer.Animation.FixedLegendInfoProvider = OpenLayers.Class(OpenLayers
     },
     provideLegendInfo : function(rangedLayer) {
         return [this.legendInfo];
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.FixedLegendInfoProvider"
 });
 
 OpenLayers.Layer.Animation.WMSWMTSLegendInfoProvider = OpenLayers.Class(OpenLayers.Layer.Animation.LegendInfoProvider, {
@@ -63,5 +69,7 @@ OpenLayers.Layer.Animation.WMSWMTSLegendInfoProvider = OpenLayers.Class(OpenLaye
         });
 
         return info;
-    }
+    },
+
+    CLASS_NAME : "OpenLayers.Layer.Animation.WMSWMTSLegendInfoProvider"
 });
