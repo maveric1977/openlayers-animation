@@ -5,7 +5,7 @@
         if (!_.isFunction(options.layerFactory)) {
             throw "layerFactory must be a function";
         }
-        var objectProps = ["preloadPolicy", "retainPolicy", "fader", "timeSelector", "legendInfoProvider"];
+        var objectProps = ["retainPolicy", "fader", "timeSelector", "legendInfoProvider"];
         _.each(objectProps, function(propName) {
             if (!_.isObject(options[propName])) {
                 throw (propName +" must be an object");
@@ -35,7 +35,6 @@
             this._opacity = 1.0; // Not available through Layer, store locally
             this._capabilities = options.capabilities; // URL and layer for capabilities request, may be undefined
 
-            this._preloadPolicy = options.preloadPolicy;
             this._retainPolicy = options.retainPolicy;
             this._fader = options.fader;
             this._timeSelector = options.timeSelector;
@@ -117,6 +116,10 @@
             return layer;
         },
 
+        preload : function(t) {
+            this.loadLayer(t);
+        },
+
         setTime : function(requestedTime) {
             if (requestedTime === undefined) {
                 throw "Cannot set time of layer " + this.name + " to undefined";
@@ -159,11 +162,6 @@
                 // this.setSubLayerVisibility(layer, true);
                 this._fader.fade(this, previousLayer, layer, hidePrevious);
             }
-
-            var preloadTimes = this._preloadPolicy.preloadAt(this, shownTime);
-            _.each(preloadTimes, function(preloadTime) {
-                var preloadLayer = this.loadLayer(preloadTime);
-            }, this);
 
         },
 
