@@ -85,6 +85,13 @@
             _.invoke(this._layers, "setTime", t);
         },
 
+        /**
+         * Call preload on all layers.
+         */
+        preload : function(t) {
+            _.invoke(this._layers, "preload", t);
+        },
+
         
         /**
          * Get timeline names
