@@ -274,7 +274,7 @@
          * TODO Move documentation here
          */
         getLegendInfo : function() {
-            var embeddedLayer = this._layerFactory(new Date());
+            var embeddedLayer = this._layerFactory(new Date()); // TODO This leaks memory
             return this._legendInfoProvider.provideLegendInfo(embeddedLayer);
         },
 
